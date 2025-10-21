@@ -154,13 +154,13 @@
             padding-bottom: 10px;
         }
         
-        .app-list, .file-list, .session-list {
+        .app-list, .file-list, .session-list, .website-list {
             list-style: none;
             max-height: 400px;
             overflow-y: auto;
         }
         
-        .app-item, .file-item {
+        .app-item, .file-item, .website-item {
             padding: 15px;
             border-bottom: 1px solid #2a2a4a;
             display: flex;
@@ -171,14 +171,14 @@
             cursor: help;
         }
         
-        .app-item:hover, .file-item:hover {
+        .app-item:hover, .file-item:hover, .website-item:hover {
             background: rgba(255, 167, 38, 0.05);
             padding-left: 20px;
             border-left: 3px solid #ffa726;
         }
         
         .app-item:hover::after {
-            content: "Application you used for studying";
+            content: "Application used for studying";
             position: absolute;
             right: 10px;
             top: -30px;
@@ -193,7 +193,7 @@
         }
         
         .file-item:hover::after {
-            content: "Document or file you worked on";
+            content: "Document or file worked on";
             position: absolute;
             right: 10px;
             top: -30px;
@@ -207,17 +207,38 @@
             z-index: 10;
         }
         
-        .app-item:last-child, .file-item:last-child {
+        .website-item:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            right: 10px;
+            top: -30px;
+            background: #1a1f3a;
+            color: #ffa726;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 0.75em;
+            white-space: nowrap;
+            border: 1px solid #ffa726;
+            z-index: 10;
+        }
+        
+        .app-item:last-child, .file-item:last-child, .website-item:last-child {
             border-bottom: none;
         }
         
-        .app-name, .file-name {
+        .app-name, .file-name, .website-name {
             font-weight: 600;
             color: #e0e0e0;
             font-size: 0.95em;
         }
         
-        .app-time, .file-time {
+        .visit-count {
+            font-size: 0.75em;
+            color: #888;
+            margin-top: 3px;
+        }
+        
+        .app-time, .file-time, .website-time {
             color: #ffa726;
             font-weight: 700;
             font-size: 1.1em;
@@ -357,6 +378,7 @@
             .stat-card:hover::after,
             .app-item:hover::after,
             .file-item:hover::after,
+            .website-item:hover::after,
             .session-item:hover::after {
                 display: none;
             }
@@ -417,6 +439,22 @@
             </div>
         </div>
         
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px;">
+            <div class="list-container">
+                <h2>Study Websites This Week</h2>
+                <ul class="website-list" id="studyWebsiteList">
+                    <li class="loading">No study websites yet</li>
+                </ul>
+            </div>
+            
+            <div class="list-container">
+                <h2>Procrastination Websites</h2>
+                <ul class="website-list" id="procrastinationWebsiteList">
+                    <li class="loading">Clean record... for now</li>
+                </ul>
+            </div>
+        </div>
+        
         <div class="list-container">
             <h2>Recent Activity Timeline (Last 24 Hours)</h2>
             <div class="session-list" id="sessionList">
@@ -434,7 +472,9 @@
             "Sleep deprivation is not a Learner Profile attribute",
             "Your study-to-coffee ratio is concerning",
             "Yes, watching YouTube counts as research. No, we're not tracking that as study time.",
-            "Breaking News: Student discovers 8 hours of study ≠ 8 hours on Reddit",
+            "Breaking News: Student discovers 8 hours of study does not equal 8 hours on Reddit",
+            "The IB Learner Profile forgot to include 'Caffeinated'",
+            "Your Extended Essay word count: 3,847. Words actually written: 12.",
         ];
         
         function updateJokeBanner() {
@@ -506,6 +546,46 @@
             `).join('');
         }
         
+        async function updateStudyWebsites() {
+            const data = await fetchData('/api/websites/study');
+            const list = document.getElementById('studyWebsiteList');
+            
+            if (!data || data.length === 0) {
+                list.innerHTML = '<li class="loading">No study websites tracked yet</li>';
+                return;
+            }
+            
+            list.innerHTML = data.map(site => `
+                <li class="website-item" data-tooltip="${site.visit_count} visits • ${site.domain}">
+                    <div>
+                        <div class="website-name">${site.domain}</div>
+                        <div class="visit-count">${site.visit_count} visits</div>
+                    </div>
+                    <span class="website-time">${site.duration_formatted}</span>
+                </li>
+            `).join('');
+        }
+        
+        async function updateProcrastinationWebsites() {
+            const data = await fetchData('/api/websites/procrastination');
+            const list = document.getElementById('procrastinationWebsiteList');
+            
+            if (!data || data.length === 0) {
+                list.innerHTML = '<li class="loading">Clean record! No procrastination detected...</li>';
+                return;
+            }
+            
+            list.innerHTML = data.map(site => `
+                <li class="website-item" data-tooltip="${site.visit_count} visits • ${site.domain}">
+                    <div>
+                        <div class="website-name">${site.domain}</div>
+                        <div class="visit-count">${site.visit_count} visits</div>
+                    </div>
+                    <span class="website-time">${site.duration_formatted}</span>
+                </li>
+            `).join('');
+        }
+        
         async function updateSessions() {
             const data = await fetchData('/api/recent_sessions');
             const sessionList = document.getElementById('sessionList');
@@ -522,17 +602,11 @@
                 const time = new Date(session.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 
                 let details = '';
-                let tooltipText = `${type} in ${session.app_name}`;
+                let tooltipText = `${type} in ${session.app_name} for ${session.duration_formatted}`;
                 
-                if (session.website_url) {
-                    // Extract readable domain from URL
-                    try {
-                        const url = new URL(session.website_url);
-                        details = url.hostname.replace('www.', '');
-                        tooltipText += ` • Website: ${details}`;
-                    } catch {
-                        details = session.website_url;
-                    }
+                if (session.website_domain) {
+                    details = session.website_domain;
+                    tooltipText += ` • Website: ${details}`;
                 } else if (session.file_path) {
                     details = session.file_path;
                     tooltipText += ` • File: ${details}`;
@@ -558,6 +632,8 @@
                 updateSummaryStats(),
                 updateAppList(),
                 updateFileList(),
+                updateStudyWebsites(),
+                updateProcrastinationWebsites(),
                 updateSessions()
             ]);
         }

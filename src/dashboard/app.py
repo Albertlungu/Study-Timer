@@ -41,6 +41,18 @@ def format_duration(seconds):
     return f"{minutes}m"
 
 
+def extract_domain(url):
+    """Extract domain from URL"""
+    if not url:
+        return None
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        return parsed.netloc.replace('www.', '')
+    except:
+        return url
+
+
 @app.route('/')
 def index():
     """Main dashboard page"""
@@ -174,6 +186,88 @@ def api_apps():
     return jsonify(data)
 
 
+@app.route('/api/websites/study')
+def api_websites_study():
+    """Get study websites breakdown"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    today = date.today()
+    week_ago = today - timedelta(days=6)
+    
+    cursor.execute("""
+        SELECT 
+            website_url,
+            SUM(duration) as total_duration,
+            COUNT(*) as visit_count
+        FROM sessions
+        WHERE DATE(start_time) BETWEEN ? AND ? 
+        AND is_study = 1 
+        AND website_url IS NOT NULL
+        GROUP BY website_url
+        ORDER BY total_duration DESC
+        LIMIT 15
+    """, (week_ago, today))
+    
+    rows = cursor.fetchall()
+    
+    data = []
+    for row in rows:
+        domain = extract_domain(row['website_url'])
+        if domain:
+            data.append({
+                'domain': domain,
+                'url': row['website_url'],
+                'duration': row['total_duration'],
+                'duration_formatted': format_duration(row['total_duration']),
+                'visit_count': row['visit_count']
+            })
+    
+    conn.close()
+    return jsonify(data)
+
+
+@app.route('/api/websites/procrastination')
+def api_websites_procrastination():
+    """Get procrastination websites breakdown"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    today = date.today()
+    week_ago = today - timedelta(days=6)
+    
+    cursor.execute("""
+        SELECT 
+            website_url,
+            SUM(duration) as total_duration,
+            COUNT(*) as visit_count
+        FROM sessions
+        WHERE DATE(start_time) BETWEEN ? AND ? 
+        AND is_procrastination = 1 
+        AND website_url IS NOT NULL
+        GROUP BY website_url
+        ORDER BY total_duration DESC
+        LIMIT 15
+    """, (week_ago, today))
+    
+    rows = cursor.fetchall()
+    
+    data = []
+    for row in rows:
+        domain = extract_domain(row['website_url'])
+        if domain:
+            data.append({
+                'domain': domain,
+                'url': row['website_url'],
+                'duration': row['total_duration'],
+                'duration_formatted': format_duration(row['total_duration']),
+                'visit_count': row['visit_count']
+            })
+    
+    conn.close()
+    return jsonify(data)
+
+
 @app.route('/api/files')
 def api_files():
     """Get recently worked on files"""
@@ -241,11 +335,14 @@ def api_recent_sessions():
     
     data = []
     for row in rows:
+        domain = extract_domain(row['website_url']) if row['website_url'] else None
+        
         data.append({
             'app_name': row['app_name'],
             'window_title': row['window_title'],
             'file_path': row['file_path'],
             'website_url': row['website_url'],
+            'website_domain': domain,
             'start_time': row['start_time'],
             'end_time': row['end_time'],
             'duration': row['duration'],

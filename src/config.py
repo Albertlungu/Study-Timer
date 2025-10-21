@@ -23,6 +23,8 @@ IDLE_TIMEOUT = 300  # seconds of inactivity before considering user idle (5 minu
 STUDY_APPS = [
     "Obsidian",
     "Notes",  # Apple Notes
+    "Comet",
+    "Arc",
     "Google Chrome",
     "Safari",
     "Firefox",
@@ -47,10 +49,10 @@ STUDY_APPS = [
 
 # Study-related websites (these will be tracked when in browsers)
 STUDY_WEBSITES = [
-    "docs.google.com",
-    "slides.google.com",
+    "docs.google.com/document",
+    "docs.google.com/presentation",
     "drive.google.com",
-    "sheets.google.com",
+    "docs.google.com/spreadsheets",
     "overleaf.com",
     "notion.so",
     "github.com",
