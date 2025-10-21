@@ -79,25 +79,6 @@
             color: #00d9ff;
         }
         
-        .chart-container {
-            background: #16213e;
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid #0f3460;
-            margin-bottom: 25px;
-        }
-        
-        .chart-container h2 {
-            margin-bottom: 15px;
-            color: #00d9ff;
-            font-size: 1.3em;
-        }
-        
-        .chart {
-            width: 100%;
-            height: 250px;
-        }
-        
         .list-container {
             background: #16213e;
             padding: 20px;
@@ -114,7 +95,7 @@
         
         .app-list, .file-list, .session-list {
             list-style: none;
-            max-height: 300px;
+            max-height: 350px;
             overflow-y: auto;
         }
         
@@ -222,14 +203,9 @@
             </div>
         </div>
         
-        <div class="chart-container">
-            <h2>📈 Weekly Study Time</h2>
-            <canvas id="weeklyChart" class="chart"></canvas>
-        </div>
-        
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
             <div class="list-container">
-                <h2>📱 Top Apps</h2>
+                <h2>📱 Top Apps This Week</h2>
                 <ul class="app-list" id="appList">
                     <li class="loading">Loading...</li>
                 </ul>
@@ -244,17 +220,14 @@
         </div>
         
         <div class="list-container">
-            <h2>🕐 Recent Sessions</h2>
+            <h2>🕐 Recent Sessions (Last 24h)</h2>
             <div class="session-list" id="sessionList">
                 <div class="loading">Loading...</div>
             </div>
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
-        let chart = null;
-        
         async function fetchData(endpoint) {
             try {
                 const response = await fetch(endpoint);
@@ -282,68 +255,12 @@
             document.getElementById('currentStreak').textContent = data.current_streak;
         }
         
-        async function createWeeklyChart() {
-            const data = await fetchData('/api/week');
-            if (!data) return;
-            
-            const ctx = document.getElementById('weeklyChart').getContext('2d');
-            
-            if (chart) {
-                chart.destroy();
-            }
-            
-            chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.map(d => d.day),
-                    datasets: [
-                        {
-                            label: 'Study (min)',
-                            data: data.map(d => Math.round(d.study_time / 60)),
-                            backgroundColor: 'rgba(0, 217, 255, 0.7)',
-                            borderColor: 'rgba(0, 217, 255, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Procrastination (min)',
-                            data: data.map(d => Math.round(d.procrastination_time / 60)),
-                            backgroundColor: 'rgba(255, 107, 107, 0.7)',
-                            borderColor: 'rgba(255, 107, 107, 1)',
-                            borderWidth: 1
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#eee'
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#888' },
-                            grid: { color: '#0f3460' }
-                        },
-                        x: {
-                            ticks: { color: '#888' },
-                            grid: { color: '#0f3460' }
-                        }
-                    }
-                }
-            });
-        }
-        
         async function updateAppList() {
             const data = await fetchData('/api/apps');
             const appList = document.getElementById('appList');
             
             if (!data || data.length === 0) {
-                appList.innerHTML = '<li class="loading">No data yet</li>';
+                appList.innerHTML = '<li class="loading">No data yet. Start studying!</li>';
                 return;
             }
             
@@ -360,7 +277,7 @@
             const fileList = document.getElementById('fileList');
             
             if (!data || data.length === 0) {
-                fileList.innerHTML = '<li class="loading">No files yet</li>';
+                fileList.innerHTML = '<li class="loading">No files tracked yet</li>';
                 return;
             }
             
@@ -383,7 +300,7 @@
                 return;
             }
             
-            sessionList.innerHTML = data.slice(0, 10).map(session => {
+            sessionList.innerHTML = data.slice(0, 12).map(session => {
                 const className = session.is_procrastination ? 'session-item procrastination' : 'session-item';
                 const emoji = session.is_study ? '📚' : session.is_procrastination ? '😅' : '💻';
                 const time = new Date(session.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
@@ -405,7 +322,6 @@
             await Promise.all([
                 updateTodayStats(),
                 updateSummaryStats(),
-                createWeeklyChart(),
                 updateAppList(),
                 updateFileList(),
                 updateSessions()
@@ -415,7 +331,7 @@
         // Initial load
         refreshAll();
         
-        // Refresh every 60 seconds (less frequent = less lag)
+        // Refresh every 60 seconds
         setInterval(refreshAll, 60000);
     </script>
 </body>
