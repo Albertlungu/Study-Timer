@@ -32,6 +32,8 @@ class StudyTimer:
         self.cursor = self.conn.cursor()
         self.current_session = None
         self.session_start = None
+        self.last_activity_time = None  # Track when we last saw activity
+        self.session_break_threshold = 900  # 15 minutes in seconds
         self.setup_logging()
         self.logger.info("Study Timer initialized!")
     
@@ -67,6 +69,17 @@ class StudyTimer:
                 return (False, False)
             return (True, False)
         return (False, False)
+    
+    def should_start_new_session(self):
+        """
+        Determine if we should start a new session.
+        Only start new session if more than 15 minutes have passed since last activity.
+        """
+        if not self.last_activity_time:
+            return True
+        
+        time_since_activity = (datetime.now() - self.last_activity_time).total_seconds()
+        return time_since_activity > self.session_break_threshold
     
     def log_activity(self, activity_data):
         """Log activity to database"""
@@ -112,6 +125,30 @@ class StudyTimer:
         except Exception as e:
             self.logger.error(f"Error starting session: {e}")
     
+    def update_session(self, activity_data):
+        """
+        Update the current session with new activity data.
+        This keeps the session alive without creating a new one.
+        """
+        if not self.current_session:
+            return
+        
+        try:
+            # Just update the end time - we'll calculate duration when we actually end
+            self.cursor.execute("""
+                UPDATE sessions 
+                SET end_time = ?,
+                    duration = ?
+                WHERE id = ?
+            """, (
+                activity_data['timestamp'],
+                int((activity_data['timestamp'] - self.session_start).total_seconds()),
+                self.current_session
+            ))
+            self.conn.commit()
+        except Exception as e:
+            self.logger.error(f"Error updating session: {e}")
+    
     def end_current_session(self, end_time):
         """End current session"""
         if not self.current_session:
@@ -122,7 +159,7 @@ class StudyTimer:
                 UPDATE sessions SET end_time = ?, duration = ? WHERE id = ?
             """, (end_time, duration, self.current_session))
             self.conn.commit()
-            self.logger.info(f"Session ended: {duration}s")
+            self.logger.info(f"Session ended: {duration}s ({duration//60}m)")
             self.current_session = None
             self.session_start = None
         except Exception as e:
@@ -163,19 +200,34 @@ class StudyTimer:
     def run(self):
         """Main loop"""
         self.logger.info("Starting study tracking...")
+        self.logger.info("Session break threshold: 15 minutes")
         update_counter = 0
         
         try:
             while True:
                 activity = self.app_tracker.get_current_activity()
                 app_name = activity['app_name']
+                current_time = datetime.now()
                 
+                # Check if user is idle
                 if self.app_tracker.is_idle(IDLE_TIMEOUT):
-                    if self.current_session:
-                        self.end_current_session(datetime.now())
+                    # User is idle, but don't end session yet
+                    # Only end if they've been idle for 15+ minutes
+                    if self.last_activity_time:
+                        time_since_activity = (current_time - self.last_activity_time).total_seconds()
+                        if time_since_activity > self.session_break_threshold:
+                            if self.current_session:
+                                self.logger.info("15+ minutes of inactivity, ending session")
+                                self.end_current_session(self.last_activity_time)
+                                self.last_activity_time = None
+                    
                     time.sleep(TRACKING_INTERVAL)
                     continue
                 
+                # User is active, update last activity time
+                self.last_activity_time = current_time
+                
+                # Get browser activity if applicable
                 url = None
                 if self.browser_tracker.is_browser(app_name):
                     browser_activity = self.browser_tracker.get_browser_activity(app_name)
@@ -183,6 +235,7 @@ class StudyTimer:
                 
                 is_study, is_procrastination = self.is_study_activity(app_name, url)
                 
+                # Build activity data
                 activity_data = {
                     'timestamp': activity['timestamp'],
                     'app_name': app_name,
@@ -191,14 +244,27 @@ class StudyTimer:
                     'url': url
                 }
                 
+                # Log activity
                 self.log_activity(activity_data)
                 
-                if activity['is_new_session']:
-                    if self.current_session:
-                        self.end_current_session(activity['timestamp'])
-                    if is_study or is_procrastination:
+                # Handle session tracking
+                if is_study or is_procrastination:
+                    if not self.current_session:
+                        # No current session, start a new one
                         self.start_new_session(activity_data, is_study, is_procrastination)
+                    elif self.should_start_new_session():
+                        # Been inactive for 15+ minutes, start new session
+                        self.logger.info("15+ minute break detected, starting new session")
+                        self.end_current_session(self.last_activity_time)
+                        self.start_new_session(activity_data, is_study, is_procrastination)
+                    else:
+                        # Continue current session (just update duration)
+                        self.update_session(activity_data)
+                else:
+                    # Not a tracked activity - if we have a session, keep it but don't update
+                    pass
                 
+                # Update daily stats every 10 iterations
                 update_counter += 1
                 if update_counter >= 10:
                     self.update_daily_stats()
@@ -229,6 +295,8 @@ def main():
     print("=" * 60)
     print("\n🎯 Mission: Track your study time automatically")
     print("⚠️  Reality: Reveal how much you actually procrastinate\n")
+    print("💡 Sessions now continue through tab switches!")
+    print("   A new session only starts after 15 minutes of inactivity\n")
     print("💡 Grant Accessibility permissions in System Preferences!")
     print("   (Security & Privacy → Privacy → Accessibility)\n")
     

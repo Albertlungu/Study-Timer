@@ -1,0 +1,29 @@
+.reset-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(255, 107, 107, 0.3);
+}
+
+.reset-btn:hover {
+    background: linear-gradient(135deg, #ff5252 0%, #ff1744 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.5);
+}
+
+.reset-btn:active {
+    transform: translateY(0);
+}
+
+.header {
+    position: relative;
+}

@@ -5,7 +5,7 @@ A beautiful web interface to view your study statistics.
 Because staring at raw database queries is not fun.
 """
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import sqlite3
 import sys
 from pathlib import Path
@@ -57,6 +57,26 @@ def extract_domain(url):
 def index():
     """Main dashboard page"""
     return render_template('index.html')
+
+
+@app.route('/api/reset', methods=['POST'])
+def api_reset():
+    """Reset all tracking data"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Delete all data from tables
+        cursor.execute("DELETE FROM sessions")
+        cursor.execute("DELETE FROM activity_log")
+        cursor.execute("DELETE FROM daily_stats")
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'All data has been reset!'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 
 @app.route('/api/today')
