@@ -1,0 +1,186 @@
+                                                                                
+     ███████╗████████╗██╗   ██╗██████╗ ██╗   ██╗                              
+     ██╔════╝╚══██╔══╝██║   ██║██╔══██╗╚██╗ ██╔╝                              
+     ███████╗   ██║   ██║   ██║██║  ██║ ╚████╔╝                               
+     ╚════██║   ██║   ██║   ██║██║  ██║  ╚██╔╝                                
+     ███████║   ██║   ╚██████╔╝██████╔╝   ██║                                 
+     ╚══════╝   ╚═╝    ╚═════╝ ╚═════╝    ╚═╝                                 
+                                                                                
+     ████████╗██╗███╗   ███╗███████╗██████╗                                   
+     ╚══██╔══╝██║████╗ ████║██╔════╝██╔══██╗                                  
+        ██║   ██║██╔████╔██║█████╗  ██████╔╝                                  
+        ██║   ██║██║╚██╔╝██║██╔══╝  ██╔══██╗                                  
+        ██║   ██║██║ ╚═╝ ██║███████╗██║  ██║                                  
+        ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝                                  
+                                                                                
+═══════════════════════════════════════════════════════════════════════════════
+                    Procrastination Detector 3000™
+                  Your Personal Study Time Tracker
+═══════════════════════════════════════════════════════════════════════════════
+
+🎯 WHAT IT DOES
+───────────────────────────────────────────────────────────────────────────────
+Automatically tracks your study sessions by monitoring:
+  • Applications you use (Obsidian, Notes, Google Docs, etc.)
+  • Files you work on (tracks specific documents!)
+  • Websites you visit (study sites vs... other sites 😅)
+  • Time spent on each activity
+
+No manual timers. No button pressing. Just study (or procrastinate) and it tracks!
+
+
+📊 FEATURES
+───────────────────────────────────────────────────────────────────────────────
+  ✅ Automatic tracking - runs silently in background
+  ✅ Beautiful web dashboard - real-time stats with charts
+  ✅ File-level tracking - knows WHICH documents you work on
+  ✅ Browser URL extraction - Chrome, Safari, Firefox supported
+  ✅ Study vs. Procrastination - categorizes your activities
+  ✅ Session history - see timeline of your day
+  ✅ Weekly charts - visualize study patterns
+  ✅ Study streaks - track consecutive study days 🔥
+  ✅ IB-themed humor - because you need to laugh to survive
+  ✅ Privacy first - all data stored locally, never leaves your Mac
+
+
+🚀 QUICK START
+───────────────────────────────────────────────────────────────────────────────
+  1. Run:    ./start.sh
+  2. Grant:  Accessibility permissions (System Preferences)
+  3. Track:  python src/main.py
+  4. View:   python src/dashboard/app.py
+  5. Open:   http://localhost:5000
+
+
+📁 PROJECT STRUCTURE
+───────────────────────────────────────────────────────────────────────────────
+  src/
+    ├── main.py              Main tracking daemon
+    ├── config.py            Configuration & settings
+    ├── init_db.py           Database initialization
+    ├── trackers/            Tracking modules
+    │   ├── app_tracker.py   Application monitoring
+    │   ├── browser_tracker.py  Browser URL extraction
+    │   └── file_tracker.py  File detection
+    └── dashboard/           Web dashboard
+        ├── app.py           Flask application
+        └── templates/       HTML templates
+
+  Documentation:
+    ├── README.md            Project overview
+    ├── INSTALL.md           Detailed setup guide
+    ├── QUICKSTART.md        Quick reference
+    ├── FEATURES.md          Feature showcase
+    ├── CONTRIBUTING.md      Contribution guide
+    ├── CHANGELOG.md         Version history
+    └── PROJECT_SUMMARY.md   Technical summary
+
+  Scripts:
+    ├── start.sh             Automated setup
+    ├── test.sh              Component testing
+    ├── status.sh            System status check
+    └── commit.sh            Git helper
+
+
+🎓 PERFECT FOR IB STUDENTS
+───────────────────────────────────────────────────────────────────────────────
+  📝 Extended Essay       → Track research & writing time
+  🔬 Internal Assessments → Monitor progress on each IA
+  📚 Subject Study        → See time distribution
+  🎯 CAS Projects         → Track creative/activity time
+  💭 TOK Essays           → How long do you REALLY spend?
+  📊 Exam Prep            → Build study consistency
+  🔥 Study Streaks        → Maintain momentum
+
+
+🛠️ TECH STACK
+───────────────────────────────────────────────────────────────────────────────
+  Language:       Python 3.8+
+  Web Framework:  Flask
+  Database:       SQLite
+  Charts:         Chart.js
+  macOS APIs:     PyObjC (Cocoa, Quartz)
+  Browser Control: AppleScript
+
+
+🔒 PRIVACY & SECURITY
+───────────────────────────────────────────────────────────────────────────────
+  ✓ All data stored locally in SQLite
+  ✓ No cloud sync, no external APIs
+  ✓ No telemetry, no tracking
+  ✓ No user accounts required
+  ✓ You own your data completely
+  ✓ Open source - audit the code yourself
+
+
+💡 HELPFUL COMMANDS
+───────────────────────────────────────────────────────────────────────────────
+  Setup:       ./start.sh
+  Test:        ./test.sh
+  Status:      ./status.sh
+  Track:       python src/main.py
+  Dashboard:   python src/dashboard/app.py
+  Initialize:  python src/init_db.py
+
+
+📚 DOCUMENTATION
+───────────────────────────────────────────────────────────────────────────────
+  New User?      → Start with README.md
+  Installing?    → Check INSTALL.md
+  Quick Ref?     → See QUICKSTART.md
+  Contributing?  → Read CONTRIBUTING.md
+  Features?      → Browse FEATURES.md
+
+
+🎨 DASHBOARD STATS
+───────────────────────────────────────────────────────────────────────────────
+  Today's Stats:
+    • Study time (hours:minutes)
+    • Procrastination time (be honest!)
+    • Number of sessions
+    • Current study streak
+
+  Weekly View:
+    • Bar chart showing daily study time
+    • Study vs. procrastination comparison
+    • Last 7 days at a glance
+
+  App Analytics:
+    • Top 10 apps this week
+    • Time spent in each
+    • Session counts
+
+  File Tracking:
+    • Recent files worked on
+    • Time per document
+    • Last modified timestamps
+
+  Session History:
+    • Last 24 hours of activity
+    • Detailed timeline
+    • Color-coded by type
+
+
+🤝 CONTRIBUTING
+───────────────────────────────────────────────────────────────────────────────
+  Contributions welcome! Check CONTRIBUTING.md for:
+    • How to report bugs
+    • Feature suggestions
+    • Development setup
+    • Coding standards
+    • Pull request process
+
+
+📝 LICENSE
+───────────────────────────────────────────────────────────────────────────────
+  MIT License - Free to use, modify, and share!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+  Made with ☕ and 😭 by an IB student who should be studying right now
+═══════════════════════════════════════════════════════════════════════════════
+
+  "Theory of Knowledge: Is tracking your study time studying,
+   or procrastinating about studying?"
+
+═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Timer Dashboard - Procrastination Detector 3000</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .ib-quote {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-style: italic;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card .label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-card .subvalue {
+            font-size: 0.9em;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .chart-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .chart {
+            width: 100%;
+            height: 300px;
+        }
+        
+        .app-list, .file-list {
+            list-style: none;
+        }
+        
+        .app-item, .file-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .app-item:last-child, .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .app-item:hover, .file-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .app-name, .file-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .app-time, .file-time {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .session-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .session-item {
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .session-item.procrastination {
+            border-left-color: #ff6b6b;
+        }
+        
+        .session-time {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .session-app {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .session-details {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Study Timer Dashboard</h1>
+            <p class="subtitle">Procrastination Detector 3000™</p>
+            <div class="ib-quote" id="ibQuote">Loading motivational quote...</div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Today's Study Time</div>
+                <div class="value" id="todayStudy">0m</div>
+                <div class="subvalue">Keep it up! 💪</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="label">Procrastination Time</div>
+                <div class="value" id="todayProcrastination">0m</div>
+                <div class="subvalue">Could be worse... 😅</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="label">Study Sessions</div>
+                <div class="value" id="todaySessions">0</div>
+                <div class="subvalue">Sessions completed</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="label">Current Streak</div>
+                <div class="value" id="currentStreak">0</div>
+                <div class="subvalue">Days in a row 🔥</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h2>📈 Weekly Study Time</h2>
+            <canvas id="weeklyChart" class="chart"></canvas>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px;">
+            <div class="chart-container">
+                <h2>📱 Top Apps This Week</h2>
+                <ul class="app-list" id="appList">
+                    <li class="loading">Loading...</li>
+                </ul>
+            </div>
+            
+            <div class="chart-container">
+                <h2>📄 Recent Files</h2>
+                <ul class="file-list" id="fileList">
+                    <li class="loading">Loading...</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h2>🕐 Recent Sessions (Last 24h)</h2>
+            <div class="session-list" id="sessionList">
+                <div class="loading">Loading...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Fetch and update today's stats
+        async function updateTodayStats() {
+            try {
+                const response = await fetch('/api/today');
+                const data = await response.json();
+                
+                document.getElementById('todayStudy').textContent = data.study_time_formatted;
+                document.getElementById('todayProcrastination').textContent = data.procrastination_time_formatted;
+                document.getElementById('todaySessions').textContent = data.total_sessions;
+                document.getElementById('ibQuote').textContent = data.ib_quote;
+            } catch (error) {
+                console.error('Error fetching today stats:', error);
+            }
+        }
+        
+        // Fetch and update summary stats
+        async function updateSummaryStats() {
+            try {
+                const response = await fetch('/api/stats/summary');
+                const data = await response.json();
+                
+                document.getElementById('currentStreak').textContent = data.current_streak;
+            } catch (error) {
+                console.error('Error fetching summary stats:', error);
+            }
+        }
+        
+        // Create weekly chart
+        async function createWeeklyChart() {
+            try {
+                const response = await fetch('/api/week');
+                const data = await response.json();
+                
+                const ctx = document.getElementById('weeklyChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(d => d.day),
+                        datasets: [
+                            {
+                                label: 'Study Time (minutes)',
+                                data: data.map(d => Math.round(d.study_time / 60)),
+                                backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                                borderColor: 'rgba(102, 126, 234, 1)',
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Procrastination (minutes)',
+                                data: data.map(d => Math.round(d.procrastination_time / 60)),
+                                backgroundColor: 'rgba(255, 107, 107, 0.8)',
+                                borderColor: 'rgba(255, 107, 107, 1)',
+                                borderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Minutes'
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error creating chart:', error);
+            }
+        }
+        
+        // Update app list
+        async function updateAppList() {
+            try {
+                const response = await fetch('/api/apps');
+                const data = await response.json();
+                
+                const appList = document.getElementById('appList');
+                
+                if (data.length === 0) {
+                    appList.innerHTML = '<li class="loading">No data yet. Start studying!</li>';
+                    return;
+                }
+                
+                appList.innerHTML = data.map(app => `
+                    <li class="app-item">
+                        <span class="app-name">${app.app_name}</span>
+                        <span class="app-time">${app.duration_formatted}</span>
+                    </li>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching apps:', error);
+            }
+        }
+        
+        // Update file list
+        async function updateFileList() {
+            try {
+                const response = await fetch('/api/files');
+                const data = await response.json();
+                
+                const fileList = document.getElementById('fileList');
+                
+                if (data.length === 0) {
+                    fileList.innerHTML = '<li class="loading">No files tracked yet</li>';
+                    return;
+                }
+                
+                fileList.innerHTML = data.map(file => `
+                    <li class="file-item">
+                        <div>
+                            <div class="file-name">${file.file_path}</div>
+                            <div style="font-size: 0.85em; color: #999;">${file.app_name}</div>
+                        </div>
+                        <span class="file-time">${file.duration_formatted}</span>
+                    </li>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching files:', error);
+            }
+        }
+        
+        // Update recent sessions
+        async function updateSessions() {
+            try {
+                const response = await fetch('/api/recent_sessions');
+                const data = await response.json();
+                
+                const sessionList = document.getElementById('sessionList');
+                
+                if (data.length === 0) {
+                    sessionList.innerHTML = '<div class="loading">No recent sessions</div>';
+                    return;
+                }
+                
+                sessionList.innerHTML = data.map(session => {
+                    const className = session.is_procrastination ? 'session-item procrastination' : 'session-item';
+                    const emoji = session.is_study ? '📚' : session.is_procrastination ? '😅' : '💻';
+                    const time = new Date(session.start_time).toLocaleTimeString();
+                    
+                    let details = '';
+                    if (session.file_path) {
+                        details = session.file_path;
+                    } else if (session.website_url) {
+                        details = session.website_url;
+                    } else if (session.window_title) {
+                        details = session.window_title;
+                    }
+                    
+                    return `
+                        <div class="${className}">
+                            <div class="session-time">${time} • ${session.duration_formatted}</div>
+                            <div class="session-app">${emoji} ${session.app_name}</div>
+                            ${details ? `<div class="session-details">${details}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error fetching sessions:', error);
+            }
+        }
+        
+        // Initialize dashboard
+        async function init() {
+            await updateTodayStats();
+            await updateSummaryStats();
+            await createWeeklyChart();
+            await updateAppList();
+            await updateFileList();
+            await updateSessions();
+            
+            // Refresh data every 30 seconds
+            setInterval(async () => {
+                await updateTodayStats();
+                await updateSummaryStats();
+                await updateAppList();
+                await updateFileList();
+                await updateSessions();
+            }, 30000);
+        }
+        
+        // Start when page loads
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
