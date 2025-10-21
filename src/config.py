@@ -34,7 +34,6 @@ STUDY_APPS = [
     "Keynote",
     "Preview",
     "Skim",  # PDF reader
-    "Code",  # VS Code
     "PyCharm",
     "Xcode",
     "Terminal",
@@ -81,6 +80,11 @@ PROCRASTINATION_WEBSITES = [
     "netflix.com",
     "twitch.tv",
     "discord.com",
+]
+
+# Procrastination apps
+PROCRASTINATION_APPS = [
+    "Code",  # VS Code - moved from study apps
 ]
 
 # Dashboard settings

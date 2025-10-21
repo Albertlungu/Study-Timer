@@ -10,6 +10,7 @@ import sqlite3
 import sys
 from pathlib import Path
 from datetime import datetime, timedelta, date
+import os
 
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -17,6 +18,7 @@ from config import DATABASE_PATH, DASHBOARD_PORT, DASHBOARD_HOST, IB_QUOTES
 import random
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 
 
 def get_db_connection():
@@ -316,17 +318,43 @@ def api_stats_summary():
     return jsonify(data)
 
 
+def find_free_port(start_port=5000):
+    """Find a free port starting from start_port"""
+    import socket
+    for port in range(start_port, start_port + 10):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.bind(('127.0.0.1', port))
+                return port
+        except OSError:
+            continue
+    return start_port
+
+
 def main():
     """Run the dashboard"""
     print("=" * 60)
     print("📊 STUDY TIMER DASHBOARD")
     print("=" * 60)
-    print(f"\n🌐 Opening dashboard at: http://{DASHBOARD_HOST}:{DASHBOARD_PORT}")
+    
+    # Check if port is available, if not find a free one
+    port = find_free_port(DASHBOARD_PORT)
+    
+    if port != DASHBOARD_PORT:
+        print(f"\n⚠️  Port {DASHBOARD_PORT} is busy, using port {port} instead")
+    
+    print(f"\n🌐 Dashboard starting...")
+    print(f"   Access at: http://localhost:{port}")
+    print(f"   Or:        http://127.0.0.1:{port}")
     print("📈 View your study stats in real-time!")
     print("\n💡 Tip: Keep the tracker running (main.py) to collect data")
-    print("⚠️  Press Ctrl+C to stop the dashboard\n")
+    print("\n💡 If you get a 403 error:")
+    print("   1. Run: chmod +x kill_dashboard.sh && ./kill_dashboard.sh")
+    print("   2. Try again")
+    print("\n⚠️  Press Ctrl+C to stop the dashboard\n")
     
-    app.run(host=DASHBOARD_HOST, port=DASHBOARD_PORT, debug=True)
+    # Run with proper settings
+    app.run(host='127.0.0.1', port=port, debug=False, use_reloader=False, threaded=True)
 
 
 if __name__ == '__main__':

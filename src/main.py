@@ -15,7 +15,7 @@ sys.path.append(str(Path(__file__).parent))
 
 from config import (
     DATABASE_PATH, TRACKING_INTERVAL, IDLE_TIMEOUT,
-    STUDY_APPS, STUDY_WEBSITES, PROCRASTINATION_WEBSITES,
+    STUDY_APPS, STUDY_WEBSITES, PROCRASTINATION_WEBSITES, PROCRASTINATION_APPS,
     LOG_FILE, LOG_LEVEL, IB_QUOTES
 )
 from trackers import AppTracker, BrowserTracker, FileTracker
@@ -50,6 +50,11 @@ class StudyTimer:
     
     def is_study_activity(self, app_name, url=None):
         """Check if activity is study-related"""
+        # Check if it's a procrastination app first
+        if app_name in PROCRASTINATION_APPS:
+            return (False, True)
+        
+        # Then check if it's a study app
         if app_name in STUDY_APPS:
             if self.browser_tracker.is_browser(app_name) and url:
                 category = self.browser_tracker.categorize_website(
