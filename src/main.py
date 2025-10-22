@@ -327,13 +327,13 @@ class StudyTimer:
 def main():
     """Entry point"""
     print("=" * 60)
-    print("📚 STUDYTIME - Academic Time Tracker")
+    print("STUDYTIME - Academic Time Tracker")
     print("=" * 60)
-    print("\n🎯 Mission: Track your study time automatically")
-    print("⚠️  Reality: Reveal how much you actually procrastinate\n")
-    print("💡 Sessions now continue through tab switches!")
+    print("\nMission: Track your study time automatically")
+    print("Warning: Reveal how much you actually procrastinate\n")
+    print("Sessions now continue through tab switches!")
     print("   A new session only starts after 15 minutes of inactivity\n")
-    print("💡 Grant Accessibility permissions in System Preferences!")
+    print("Grant Accessibility permissions in System Preferences!")
     print("   (Security & Privacy → Privacy → Accessibility)\n")
     
     timer = StudyTimer()

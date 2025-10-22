@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyTime Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -12,8 +11,8 @@
         }
 
         body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background: #0f1419;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #121217;
             color: #e6e9ea;
             min-height: 100vh;
             padding: 24px;
@@ -29,7 +28,7 @@
             text-align: center;
             margin-bottom: 48px;
             padding: 32px 24px;
-            background: linear-gradient(135deg, #cc1f44 0%, #aa1a33 100%);
+            background: linear-gradient(135deg, #17171D 0%, #17171D 100%);
             border-radius: 16px;
             color: white;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -37,12 +36,12 @@
         }
 
         .header h1 {
-            font-family: 'Georgia', 'Times New Roman', serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             font-size: 3rem;
             font-weight: 800;
             margin-bottom: 8px;
             letter-spacing: -0.02em;
-            color: #ff2c55;
+            color: #ED3750;
         }
 
         .header .subtitle {
@@ -94,7 +93,7 @@
         .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.4);
-            border-color: #ff2c55;
+            border-color: #ED3750;
         }
 
         .stat-card .label {
@@ -121,7 +120,7 @@
         }
 
         .section {
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            background: #17171D;
             border-radius: 16px;
             border: 1px solid #374151;
             padding: 32px;
@@ -130,10 +129,10 @@
         }
 
         .section h2 {
-            font-family: 'Georgia', 'Times New Roman', serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
-            color: #cc1f44;
+            color: #ED3750;
             margin-bottom: 24px;
             display: flex;
             align-items: center;
@@ -144,7 +143,7 @@
             content: '';
             width: 4px;
             height: 24px;
-            background: #cc1f44;
+            background: #ED3750;
             border-radius: 2px;
         }
 
@@ -171,8 +170,8 @@
 
         .list-item:hover {
             padding-left: 16px;
-            border-left: 4px solid #ff2c55;
-            background: rgba(255, 44, 85, 0.05);
+            border-left: 4px solid #ED3750;
+            background: rgba(237, 55, 80, 0.05);
         }
 
         .list-item:last-child {
@@ -192,7 +191,7 @@
         }
 
         .item-time {
-            background: linear-gradient(135deg, #ff2c55 0%, #ff4757 100%);
+            background: linear-gradient(135deg, #ED3750 0%, #ED3750 100%);
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
@@ -217,12 +216,12 @@
         }
 
         .session-item.procrastination {
-            border-left-color: #ff2c55;
-            background: rgba(255, 44, 85, 0.1);
+            border-left-color: #ED3750;
+            background: rgba(237, 55, 80, 0.1);
         }
 
         .session-item.procrastination:hover {
-            background: rgba(255, 44, 85, 0.15);
+            background: rgba(237, 55, 80, 0.15);
         }
 
         .session-time {
@@ -239,7 +238,7 @@
         }
 
         .session-details {
-            color: #ff2c55;
+            color: #ED3750;
             font-size: 0.875rem;
             font-style: italic;
             word-break: break-all;
@@ -260,18 +259,24 @@
         }
 
         .session-type.procrastination {
-            background: rgba(255, 44, 85, 0.2);
+            background: rgba(237, 55, 80, 0.2);
             color: #fca5a5;
         }
 
-        .loading {
-            text-align: center;
-            padding: 48px;
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .chart-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             color: #9ca3af;
             font-style: italic;
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-            border-radius: 8px;
-            border: 2px dashed #4b5563;
+            text-align: center;
         }
 
         /* Scrollbar styling */
@@ -295,7 +300,7 @@
         @media (max-width: 768px) {
             body {
                 padding: 16px;
-                font-family: 'Georgia', 'Times New Roman', serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             }
 
             .header {
@@ -326,8 +331,8 @@
     <div class="container">
         <div class="header">
             <button class="reset-btn" onclick="resetAllData()">Reset Data</button>
-            <h1>StudyTime</h1>
-            <div class="subtitle">Track your coding & study sessions</div>
+            <h1>Studytime</h1>
+            <div class="subtitle">Track your coding and study sessions</div>
         </div>
 
         <div class="stats-grid">
@@ -353,6 +358,38 @@
                 <div class="label">Procrastination Time</div>
                 <div class="value" id="todayProcrastination">0m</div>
                 <div class="subtext">Time spent off-task</div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 32px; margin-bottom: 32px;">
+            <div class="section">
+                <h2>Study Apps Breakdown</h2>
+                <div class="chart-container">
+                    <canvas id="appsChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Study Websites Breakdown</h2>
+                <div class="chart-container">
+                    <canvas id="websitesChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 32px; margin-bottom: 32px;">
+            <div class="section">
+                <h2>Website Time Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="websiteTimeChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Project Time Tracking</h2>
+                <div class="chart-container">
+                    <canvas id="projectsChart" width="400" height="300"></canvas>
+                </div>
             </div>
         </div>
 
@@ -522,39 +559,262 @@
             `).join('');
         }
 
-        async function updateSessions() {
-            const data = await fetchData('/api/recent_sessions');
-            const sessionList = document.getElementById('sessionList');
+        async function updateCharts() {
+            await Promise.all([
+                updateAppsChart(),
+                updateWebsitesChart(),
+                updateWebsiteTimeChart(),
+                updateProjectsChart()
+            ]);
+        }
+
+        function createPieChart(canvasId, data, title) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return null;
+
+            const chartContainer = ctx.parentElement;
+            chartContainer.innerHTML = '<div class="chart-loading">Loading chart...</div><canvas id="' + canvasId + '" width="400" height="300"></canvas>';
+
+            const newCtx = document.getElementById(canvasId);
+            if (!newCtx) return null;
+
+            return new Chart(newCtx, {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e6e9ea',
+                                font: {
+                                    family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1f2937',
+                            titleColor: '#e6e9ea',
+                            bodyColor: '#e6e9ea',
+                            borderColor: '#374151',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+        }
+
+        function createBarChart(canvasId, data, title) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return null;
+
+            const chartContainer = ctx.parentElement;
+            chartContainer.innerHTML = '<div class="chart-loading">Loading chart...</div><canvas id="' + canvasId + '" width="400" height="300"></canvas>';
+
+            const newCtx = document.getElementById(canvasId);
+            if (!newCtx) return null;
+
+            return new Chart(newCtx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+                                }
+                            },
+                            grid: {
+                                color: '#374151'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+                                }
+                            },
+                            grid: {
+                                color: '#374151'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#1f2937',
+                            titleColor: '#e6e9ea',
+                            bodyColor: '#e6e9ea',
+                            borderColor: '#374151',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+        }
+
+        async function updateAppsChart() {
+            const data = await fetchData('/api/apps');
+            const container = document.querySelector('#appsChart').parentElement;
 
             if (!data || data.length === 0) {
-                sessionList.innerHTML = '<div class="loading">Start the tracker to see your activity timeline!</div>';
+                container.innerHTML = '<div class="chart-loading">No app data available</div>';
                 return;
             }
 
-            sessionList.innerHTML = data.slice(0, 12).map(session => {
-                const className = session.is_procrastination ? 'session-item procrastination' : 'session-item';
-                const type = session.is_study ? 'Study' : session.is_procrastination ? 'Break' : 'Other';
-                const typeClass = session.is_procrastination ? 'procrastination' : 'study';
-                const time = new Date(session.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const labels = data.map(app => app.app_name);
+            const durations = data.map(app => app.duration);
 
-                let details = '';
-                if (session.website_domain) {
-                    details = session.website_domain;
-                } else if (session.file_path) {
-                    details = session.file_path.split('/').pop();
-                } else if (session.window_title) {
-                    details = session.window_title.length > 50 ? session.window_title.substring(0, 50) + '...' : session.window_title;
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    data: durations,
+                    backgroundColor: [
+                        '#ED3750', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+                        '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce'
+                    ],
+                    borderWidth: 0
+                }]
+            };
+
+            createPieChart('appsChart', chartData, 'Study Apps');
+        }
+
+        async function updateWebsitesChart() {
+            const data = await fetchData('/api/websites/study');
+            const container = document.querySelector('#websitesChart').parentElement;
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="chart-loading">No website data available</div>';
+                return;
+            }
+
+            const labels = data.map(site => site.domain);
+            const durations = data.map(site => site.duration);
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    data: durations,
+                    backgroundColor: [
+                        '#ED3750', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+                        '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce'
+                    ],
+                    borderWidth: 0
+                }]
+            };
+
+            createPieChart('websitesChart', chartData, 'Study Websites');
+        }
+
+        async function updateWebsiteTimeChart() {
+            const data = await fetchData('/api/websites/study');
+            const container = document.querySelector('#websiteTimeChart').parentElement;
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="chart-loading">No website time data available</div>';
+                return;
+            }
+
+            const labels = data.map(site => site.domain);
+            const durations = data.map(site => site.duration);
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Time Spent (seconds)',
+                    data: durations,
+                    backgroundColor: '#ED3750',
+                    borderColor: '#ED3750',
+                    borderWidth: 1
+                }]
+            };
+
+            createBarChart('websiteTimeChart', chartData, 'Website Time Distribution');
+        }
+
+        function extractProjectName(url) {
+            if (!url) return 'Unknown Project';
+
+            try {
+                const urlObj = new URL(url);
+                const domain = urlObj.hostname;
+
+                // Extract project names from common patterns
+                if (domain.includes('github.com')) {
+                    const pathParts = urlObj.pathname.split('/').filter(p => p);
+                    if (pathParts.length >= 2) {
+                        return `${pathParts[0]}/${pathParts[1]}`;
+                    }
+                } else if (domain.includes('docs.google.com')) {
+                    if (url.includes('/document/')) {
+                        return 'Google Docs';
+                    } else if (url.includes('/presentation/')) {
+                        return 'Google Slides';
+                    } else if (url.includes('/spreadsheets/')) {
+                        return 'Google Sheets';
+                    }
+                } else if (domain.includes('notion.so')) {
+                    return 'Notion';
+                } else if (domain.includes('overleaf.com')) {
+                    return 'Overleaf';
                 }
 
-                return `
-                    <div class="${className}">
-                        <div class="session-time">${time} • ${session.duration_formatted}</div>
-                        <div class="session-app">${session.app_name}</div>
-                        ${details ? `<div class="session-details">${details}</div>` : ''}
-                        <span class="session-type ${typeClass}">${type}</span>
-                    </div>
-                `;
-            }).join('');
+                return domain;
+            } catch (e) {
+                return url.split('/')[0] || 'Unknown Project';
+            }
+        }
+
+        async function updateProjectsChart() {
+            const data = await fetchData('/api/recent_sessions');
+            const container = document.querySelector('#projectsChart').parentElement;
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="chart-loading">No project data available</div>';
+                return;
+            }
+
+            // Group sessions by project
+            const projectTimes = {};
+            data.forEach(session => {
+                if (session.website_url) {
+                    const project = extractProjectName(session.website_url);
+                    projectTimes[project] = (projectTimes[project] || 0) + session.duration;
+                }
+            });
+
+            const labels = Object.keys(projectTimes);
+            const durations = Object.values(projectTimes);
+
+            if (labels.length === 0) {
+                container.innerHTML = '<div class="chart-loading">No project data available</div>';
+                return;
+            }
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Time Spent (seconds)',
+                    data: durations,
+                    backgroundColor: '#ED3750',
+                    borderColor: '#ED3750',
+                    borderWidth: 1
+                }]
+            };
+
+            createBarChart('projectsChart', chartData, 'Project Time Tracking');
         }
 
         async function refreshAll() {
@@ -565,7 +825,8 @@
                 updateFileList(),
                 updateStudyWebsites(),
                 updateProcrastinationWebsites(),
-                updateSessions()
+                updateSessions(),
+                updateCharts()
             ]);
         }
 

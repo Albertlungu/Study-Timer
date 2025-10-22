@@ -451,24 +451,24 @@ def find_free_port(start_port=5000):
 def main():
     """Run the dashboard"""
     print("=" * 60)
-    print("📊 STUDYTIME DASHBOARD")
+    print("STUDYTIME DASHBOARD")
     print("=" * 60)
     
     # Check if port is available, if not find a free one
     port = find_free_port(DASHBOARD_PORT)
     
     if port != DASHBOARD_PORT:
-        print(f"\n⚠️  Port {DASHBOARD_PORT} is busy, using port {port} instead")
+        print(f"\nWarning: Port {DASHBOARD_PORT} is busy, using port {port} instead")
     
-    print(f"\n🌐 Dashboard starting...")
+    print(f"\nDashboard starting...")
     print(f"   Access at: http://localhost:{port}")
     print(f"   Or:        http://127.0.0.1:{port}")
-    print("📈 View your study stats in real-time!")
-    print("\n💡 Tip: Keep the tracker running (main.py) to collect data")
-    print("\n💡 If you get a 403 error:")
+    print("View your study stats in real-time!")
+    print("\nTip: Keep the tracker running (main.py) to collect data")
+    print("\nIf you get a 403 error:")
     print("   1. Run: chmod +x kill_dashboard.sh && ./kill_dashboard.sh")
     print("   2. Try again")
-    print("\n⚠️  Press Ctrl+C to stop the dashboard\n")
+    print("\nPress Ctrl+C to stop the dashboard\n")
     
     # Run with proper settings
     app.run(host='127.0.0.1', port=port, debug=False, use_reloader=False, threaded=True)

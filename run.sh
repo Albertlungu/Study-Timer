@@ -8,16 +8,16 @@ echo ""
 
 # Check if we're in the right directory
 if [ ! -f "src/main.py" ] || [ ! -f "src/dashboard/app.py" ]; then
-    echo "❌ Error: Please run this script from the Study-Timer root directory"
+    echo "Error: Please run this script from the Study-Timer root directory"
     echo "   cd /Users/albertlungu/Documents/GitHub/Study-Timer"
     exit 1
 fi
 
-echo "🔍 Checking system requirements..."
+echo "Checking system requirements..."
 
 # Check if Python is available
 if ! command -v python3 &> /dev/null; then
-    echo "❌ Error: Python 3 is not installed or not in PATH"
+    echo "Error: Python 3 is not installed or not in PATH"
     exit 1
 fi
 
@@ -27,7 +27,7 @@ if [ ! -d "data" ]; then
 fi
 
 if [ ! -f "data/study_data.db" ]; then
-    echo "🗄️  Creating database..."
+    echo "Creating database..."
     python3 -c "
 import sqlite3
 conn = sqlite3.connect('data/study_data.db')
@@ -38,15 +38,15 @@ cursor.execute('CREATE TABLE daily_stats (date TEXT PRIMARY KEY, total_study_tim
 conn.commit()
 conn.close()
 "
-    echo "✅ Database created"
+    echo "Database created"
 else
-    echo "✅ Database already exists"
+    echo "Database already exists"
 fi
 
 echo ""
 
 # Kill any existing dashboard processes
-echo "🔪 Killing any existing dashboard processes..."
+echo "Killing any existing dashboard processes..."
 chmod +x kill_dashboard.sh 2>/dev/null
 ./kill_dashboard.sh > /dev/null 2>&1
 
@@ -54,13 +54,13 @@ chmod +x kill_dashboard.sh 2>/dev/null
 sleep 2
 
 echo ""
-echo "🎯 Starting StudyTime components..."
+echo "Starting StudyTime components..."
 echo ""
 
 # Function to handle cleanup on exit
 cleanup() {
     echo ""
-    echo "🛑 Shutting down StudyTime..."
+    echo "Shutting down StudyTime..."
     echo "   Press Ctrl+C again to force quit"
 
     # Kill any child processes
@@ -78,7 +78,7 @@ cleanup() {
     echo "   Cleaning up port 5000..."
     ./kill_dashboard.sh > /dev/null 2>&1
 
-    echo "✅ StudyTime stopped"
+    echo "StudyTime stopped"
     exit 0
 }
 
@@ -86,7 +86,7 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 # Start the tracker in background
-echo "📊 Starting tracker..."
+echo "Starting tracker..."
 LOG_LEVEL=DEBUG python3 src/main.py &
 TRACKER_PID=$!
 echo "   Tracker PID: $TRACKER_PID"
@@ -95,7 +95,7 @@ echo "   Tracker PID: $TRACKER_PID"
 sleep 3
 
 # Start the dashboard in background
-echo "📈 Starting dashboard..."
+echo "Starting dashboard..."
 python3 src/dashboard/app.py &
 DASHBOARD_PID=$!
 echo "   Dashboard PID: $DASHBOARD_PID"
@@ -104,20 +104,20 @@ echo "   Dashboard PID: $DASHBOARD_PID"
 sleep 2
 
 echo ""
-echo "🎉 StudyTime is now running!"
-echo "============================"
+echo "StudyTime is now running!"
+echo "==========================="
 echo ""
-echo "🌐 Dashboard: http://localhost:5000"
-echo "📝 Tracker logs: Check terminal output above"
+echo "Dashboard: http://localhost:5000"
+echo "Tracker logs: Check terminal output above"
 echo ""
-echo "💡 Tips:"
-echo "   • Switch between iTerm2 and Comet to test cross-app tracking"
-echo "   • Sessions should continue across app switches"
-echo "   • Check logs for classification messages:"
+echo "Tips:"
+echo "   Switch between iTerm2 and Comet to test cross-app tracking"
+echo "   Sessions should continue across app switches"
+echo "   Check logs for classification messages:"
 echo "     [CLASSIFY] Comet is STUDY_APP"
 echo "     [SESSION] Continuing session X with app switch: Comet"
 echo ""
-echo "🛑 To stop: Press Ctrl+C"
+echo "To stop: Press Ctrl+C"
 echo ""
 
 # Wait for user to stop the script

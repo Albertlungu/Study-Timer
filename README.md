@@ -1,4 +1,4 @@
-# 📚 StudyTime - Your Personal Academic Time Tracker
+# StudyTime - Your Personal Academic Time Tracker
 
 *Because CAS hours don't track themselves, but StudyTime tracks your actual study time.*
 
@@ -14,12 +14,13 @@ Inspired by Wakatime and Hackatime, but designed specifically for students who n
 
 ## Features
 
-✨ **Automatic Tracking**: Runs silently in the background  
-📊 **Modern Dashboard**: Clean, Hack Club-inspired design with real-time stats  
-📝 **Document-Level Tracking**: See which specific files you worked on  
-🎨 **Dark Mode UI**: Professional dark theme with responsive design  
-🔒 **Privacy First**: All data stored locally on your machine  
-⚡ **Lightweight**: Minimal CPU and memory usage  
+- **Automatic Tracking**: Runs silently in the background
+- **Modern Dashboard**: Clean, dark mode design with real-time stats and interactive charts
+- **Document-Level Tracking**: See which specific files you worked on
+- **Data Visualization**: Pie charts and bar graphs showing app usage, website time, and project tracking
+- **Cross-App Sessions**: Sessions continue when switching between study applications
+- **Privacy First**: All data stored locally on your machine
+- **Lightweight**: Minimal CPU and memory usage
 
 ## Installation
 
@@ -138,23 +139,16 @@ A: It only tracks when you're actively using study-related apps. Idle time is de
 **Q: Where is my data stored?**  
 A: Everything is stored locally in `data/study_data.db`. Nothing is sent to the cloud.
 
-**Q: Will this help me pass my IB exams?**  
-A: It'll help you realize how much time you *don't* spend studying. The rest is up to you. 😅
+## Dashboard Visualizations
 
-## Dashboard Design
+StudyTime includes interactive charts that help you understand your study patterns:
 
-StudyTime features a modern, clean dark mode design inspired by Hack Club's design system:
+- **Study Apps Breakdown**: Pie chart showing which applications you use most for studying
+- **Study Websites Breakdown**: Pie chart of your most visited study websites
+- **Website Time Distribution**: Bar chart showing time spent on each website
+- **Project Time Tracking**: Bar chart analyzing which projects you spend the most time on
 
-- **🌙 Dark Mode**: Professional dark theme (#0f1419) with light text
-- **🎨 Hack Club Colors**: Primary red (#ff2c55) with professional gray palette
-- **📱 Responsive Layout**: Works perfectly on desktop, tablet, and mobile devices
-- **💎 Card-Based UI**: Clean dark cards with subtle shadows and hover effects
-- **⚡ Real-Time Updates**: Live data refresh every 60 seconds
-- **🎯 Visual Hierarchy**: Red section headers matching the main StudyTime branding
-
-### Screenshots
-
-*Coming soon - StudyTime now features a professional, modern dark interface that's both beautiful and functional!*
+The dashboard intelligently detects projects from URLs (GitHub repositories, Google Docs, Notion workspaces, etc.) and tracks time spent on each project across all your study sessions.
 
 ## Contributing
 
