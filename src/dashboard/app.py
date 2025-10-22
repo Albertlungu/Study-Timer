@@ -375,64 +375,59 @@ def api_recent_sessions():
     return jsonify(data)
 
 
-@app.route('/api/stats/summary')
-def api_stats_summary():
-    """Get overall summary statistics"""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    # Total all-time study time
-    cursor.execute("""
-        SELECT SUM(total_study_time) as total_study
-        FROM daily_stats
-    """)
-    total_study = cursor.fetchone()['total_study'] or 0
-    
-    # Average daily study time
-    cursor.execute("""
-        SELECT AVG(total_study_time) as avg_study
-        FROM daily_stats
-        WHERE total_study_time > 0
-    """)
-    avg_study = cursor.fetchone()['avg_study'] or 0
-    
-    # Most productive day
-    cursor.execute("""
-        SELECT date, total_study_time
-        FROM daily_stats
-        ORDER BY total_study_time DESC
-        LIMIT 1
-    """)
-    best_day = cursor.fetchone()
-    
-    # Study streak (consecutive days with study time)
-    cursor.execute("""
-        SELECT date, total_study_time
-        FROM daily_stats
-        ORDER BY date DESC
-    """)
-    days = cursor.fetchall()
-    
-    streak = 0
-    for day in days:
-        if day['total_study_time'] > 0:
-            streak += 1
-        else:
-            break
-    
-    data = {
-        'total_study_time': total_study,
-        'total_study_time_formatted': format_duration(total_study),
-        'avg_daily_study': int(avg_study),
-        'avg_daily_study_formatted': format_duration(int(avg_study)),
-        'best_day_date': best_day['date'] if best_day else None,
-        'best_day_time': best_day['total_study_time'] if best_day else 0,
-        'best_day_time_formatted': format_duration(best_day['total_study_time']) if best_day else '0m',
-        'current_streak': streak
-    }
-    
-    conn.close()
-    return jsonify(data)
+@app.route('/api/export')
+def api_export():
+    """Export all data as CSV"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Get all sessions
+        cursor.execute("""
+            SELECT app_name, window_title, file_path, website_url, start_time, end_time, duration, is_study, is_procrastination
+            FROM sessions
+            ORDER BY start_time DESC
+        """)
+
+        sessions = cursor.fetchall()
+
+        # Create CSV content
+        import csv
+        import io
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+
+        # Write header
+        writer.writerow(['App Name', 'Window Title', 'File Path', 'Website URL', 'Start Time', 'End Time', 'Duration (seconds)', 'Is Study', 'Is Procrastination'])
+
+        # Write data
+        for session in sessions:
+            writer.writerow([
+                session['app_name'] or '',
+                session['window_title'] or '',
+                session['file_path'] or '',
+                session['website_url'] or '',
+                session['start_time'] or '',
+                session['end_time'] or '',
+                session['duration'] or 0,
+                session['is_study'] or 0,
+                session['is_procrastination'] or 0
+            ])
+
+        conn.close()
+
+        # Return CSV file
+        from flask import Response
+        output.seek(0)
+        return Response(
+            output.getvalue(),
+            mimetype='text/csv',
+            headers={'Content-Disposition': 'attachment; filename=studytime_export.csv'}
+        )
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 
 def find_free_port(start_port=5000):

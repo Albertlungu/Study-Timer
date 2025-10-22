@@ -352,6 +352,93 @@
             color: #fca5a5;
         }
 
+        /* Activity Date Groups */
+        .activity-date-group {
+            margin-bottom: 32px;
+        }
+
+        .activity-date-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ED3750;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ED3750;
+        }
+
+        /* Settings Page */
+        .settings-section {
+            display: grid;
+            gap: 32px;
+        }
+
+        .settings-group {
+            background: #1a1a1f;
+            border-radius: 12px;
+            border: 1px solid #2a2a2f;
+            padding: 24px;
+        }
+
+        .settings-group:hover {
+            border-color: #ED3750;
+        }
+
+        .settings-group h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e6e9ea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-group h3::before {
+            content: '';
+            width: 3px;
+            height: 20px;
+            background: #ED3750;
+            border-radius: 2px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #2a2a2f;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-item label {
+            font-weight: 600;
+            color: #e6e9ea;
+        }
+
+        .setting-item span {
+            color: #9ca3af;
+        }
+
+        .export-btn {
+            background: rgba(237, 55, 80, 0.1);
+            color: #ED3750;
+            border: 1px solid rgba(237, 55, 80, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .export-btn:hover {
+            background: rgba(237, 55, 80, 0.2);
+            border-color: rgba(237, 55, 80, 0.5);
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -376,6 +463,24 @@
 
             .stat-value {
                 font-size: 2rem;
+            }
+
+            .settings-section {
+                gap: 16px;
+            }
+
+            .settings-group {
+                padding: 16px;
+            }
+
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .activity-date-header {
+                font-size: 1rem;
             }
         }
 
@@ -407,9 +512,27 @@
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="#" class="sidebar-link active">
+                    <a href="#" class="sidebar-link active" data-page="dashboard">
                         <span class="sidebar-icon">📊</span>
                         Dashboard
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" data-page="activity">
+                        <span class="sidebar-icon">📈</span>
+                        Activity
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" data-page="projects">
+                        <span class="sidebar-icon">📋</span>
+                        Projects
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" data-page="settings">
+                        <span class="sidebar-icon">⚙️</span>
+                        Settings
                     </a>
                 </li>
             </ul>
@@ -939,6 +1062,461 @@
 
         // Refresh data every 60 seconds
         setInterval(refreshAll, 60000);
+
+        // Page switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const mainContent = document.querySelector('.main-content');
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const page = this.getAttribute('data-page');
+
+                    // Update active state
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Show different content based on page
+                    showPage(page);
+                });
+            });
+        });
+
+        function showPage(page) {
+            const mainContent = document.querySelector('.main-content');
+
+            switch(page) {
+                case 'dashboard':
+                    showDashboard();
+                    break;
+                case 'activity':
+                    showActivity();
+                    break;
+                case 'projects':
+                    showProjects();
+                    break;
+                case 'settings':
+                    showSettings();
+                    break;
+            }
+        }
+
+        function showDashboard() {
+            document.querySelector('.main-content').innerHTML = `
+                <div class="header">
+                    <div class="user-profile">
+                        <div class="user-avatar">ST</div>
+                        <div class="user-info">
+                            <h2>Student</h2>
+                            <div class="user-stats">Today: 0m • This week: 0m</div>
+                        </div>
+                    </div>
+                    <button class="reset-btn" onclick="resetAllData()">Reset Data</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Study Time Today</div>
+                        <div class="stat-value" id="todayStudy">0m</div>
+                        <div class="stat-subtext">Keep up the momentum</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Sessions Today</div>
+                        <div class="stat-value" id="todaySessions">0</div>
+                        <div class="stat-subtext">Focus sessions completed</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Current Streak</div>
+                        <div class="stat-value" id="currentStreak">0</div>
+                        <div class="stat-subtext">Consecutive study days</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Procrastination Time</div>
+                        <div class="stat-value" id="todayProcrastination">0m</div>
+                        <div class="stat-subtext">Time spent off-task</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-section">
+                        <div class="chart-header">Study Apps Breakdown</div>
+                        <div class="chart-container">
+                            <canvas id="appsChart" width="400" height="280"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <div class="chart-header">Study Websites Breakdown</div>
+                        <div class="chart-container">
+                            <canvas id="websitesChart" width="400" height="280"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <div class="chart-header">Website Time Distribution</div>
+                        <div class="chart-container">
+                            <canvas id="websiteTimeChart" width="400" height="280"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <div class="chart-header">Project Time Tracking</div>
+                        <div class="chart-container">
+                            <canvas id="projectsChart" width="400" height="280"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="activity-section">
+                    <div class="activity-header">Recent Activity</div>
+                    <div id="sessionList">
+                        <div class="chart-loading">Start the tracker to see your activity timeline!</div>
+                    </div>
+                </div>
+            `;
+
+            // Reload data after switching back to dashboard
+            refreshAll();
+        }
+
+        function showActivity() {
+            document.querySelector('.main-content').innerHTML = `
+                <div class="header">
+                    <div class="user-profile">
+                        <div class="user-avatar">ST</div>
+                        <div class="user-info">
+                            <h2>Activity Log</h2>
+                            <div class="user-stats">Detailed session history</div>
+                        </div>
+                    </div>
+                    <button class="reset-btn" onclick="resetAllData()">Reset Data</button>
+                </div>
+
+                <div class="activity-section">
+                    <div class="activity-header">All Sessions</div>
+                    <div id="activityList">
+                        <div class="chart-loading">Loading activity data...</div>
+                    </div>
+                </div>
+            `;
+
+            loadActivityPage();
+        }
+
+        function showProjects() {
+            document.querySelector('.main-content').innerHTML = `
+                <div class="header">
+                    <div class="user-profile">
+                        <div class="user-avatar">ST</div>
+                        <div class="user-info">
+                            <h2>Project Management</h2>
+                            <div class="user-stats">Track time across projects</div>
+                        </div>
+                    </div>
+                    <button class="reset-btn" onclick="resetAllData()">Reset Data</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Active Projects</div>
+                        <div class="stat-value" id="projectCount">0</div>
+                        <div class="stat-subtext">Projects being tracked</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Top Project Today</div>
+                        <div class="stat-value" id="topProject">None</div>
+                        <div class="stat-subtext">Most worked on today</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Project Sessions</div>
+                        <div class="stat-value" id="projectSessions">0</div>
+                        <div class="stat-subtext">Sessions with projects</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Avg Session Length</div>
+                        <div class="stat-value" id="avgSession">0m</div>
+                        <div class="stat-subtext">Average project session</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-section">
+                        <div class="chart-header">Projects by Time</div>
+                        <div class="chart-container">
+                            <canvas id="projectsTimeChart" width="400" height="280"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <div class="chart-header">Projects by Sessions</div>
+                        <div class="chart-container">
+                            <canvas id="projectsSessionChart" width="400" height="280"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="activity-section">
+                    <div class="activity-header">Project Breakdown</div>
+                    <div id="projectsList">
+                        <div class="chart-loading">Loading project data...</div>
+                    </div>
+                </div>
+            `;
+
+            loadProjectsPage();
+        }
+
+        function showSettings() {
+            document.querySelector('.main-content').innerHTML = `
+                <div class="header">
+                    <div class="user-profile">
+                        <div class="user-avatar">ST</div>
+                        <div class="user-info">
+                            <h2>Settings</h2>
+                            <div class="user-stats">Configure your tracking</div>
+                        </div>
+                    </div>
+                    <button class="reset-btn" onclick="resetAllData()">Reset Data</button>
+                </div>
+
+                <div class="settings-section">
+                    <div class="settings-group">
+                        <h3>Tracking Configuration</h3>
+                        <div class="setting-item">
+                            <label>Tracking Interval:</label>
+                            <span>5 seconds</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Idle Timeout:</label>
+                            <span>30 seconds</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Study Apps:</label>
+                            <span>Auto-detected</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>Privacy Settings</h3>
+                        <div class="setting-item">
+                            <label>Data Storage:</label>
+                            <span>Local SQLite Database</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Data Export:</label>
+                            <button class="export-btn" onclick="exportData()">Export Data</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>Display Settings</h3>
+                        <div class="setting-item">
+                            <label>Theme:</label>
+                            <span>Dark Mode</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Refresh Rate:</label>
+                            <span>60 seconds</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>Account</h3>
+                        <div class="setting-item">
+                            <label>Username:</label>
+                            <span>Student</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Study Goal:</label>
+                            <span>Daily</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadActivityPage() {
+            const data = await fetchData('/api/recent_sessions');
+            const activityList = document.getElementById('activityList');
+
+            if (!data || data.length === 0) {
+                activityList.innerHTML = '<div class="chart-loading">Start the tracker to see your activity timeline!</div>';
+                return;
+            }
+
+            // Remove loading state if it exists
+            const loadingDiv = activityList.querySelector('.chart-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            // Group sessions by date
+            const sessionsByDate = {};
+            data.forEach(session => {
+                const date = new Date(session.start_time).toLocaleDateString();
+                if (!sessionsByDate[date]) {
+                    sessionsByDate[date] = [];
+                }
+                sessionsByDate[date].push(session);
+            });
+
+            let html = '';
+            Object.keys(sessionsByDate).sort().reverse().forEach(date => {
+                html += `<div class="activity-date-group">`;
+                html += `<div class="activity-date-header">${date}</div>`;
+
+                sessionsByDate[date].forEach(session => {
+                    const className = session.is_procrastination ? 'activity-item procrastination' : 'activity-item';
+                    const type = session.is_study ? 'Study' : session.is_procrastination ? 'Break' : 'Other';
+                    const typeClass = session.is_procrastination ? 'procrastination' : 'study';
+                    const time = new Date(session.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const duration = session.duration_formatted;
+
+                    let details = '';
+                    if (session.website_domain) {
+                        details = session.website_domain;
+                    } else if (session.file_path) {
+                        details = session.file_path.split('/').pop();
+                    } else if (session.window_title) {
+                        details = session.window_title.length > 50 ? session.window_title.substring(0, 50) + '...' : session.window_title;
+                    }
+
+                    html += `
+                        <div class="${className}">
+                            <div class="activity-time">${time} • ${duration}</div>
+                            <div class="activity-app">${session.app_name}</div>
+                            ${details ? `<div class="activity-details">${details}</div>` : ''}
+                            <span class="activity-type ${typeClass}">${type}</span>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            });
+
+            activityList.innerHTML = html;
+        }
+
+        async function loadProjectsPage() {
+            const data = await fetchData('/api/recent_sessions');
+            const projectsList = document.getElementById('projectsList');
+
+            if (!data || data.length === 0) {
+                projectsList.innerHTML = '<div class="chart-loading">No project data available</div>';
+                return;
+            }
+
+            // Remove loading state if it exists
+            const loadingDiv = projectsList.querySelector('.chart-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            // Group sessions by project
+            const projectTimes = {};
+            const projectSessions = {};
+
+            data.forEach(session => {
+                if (session.website_url) {
+                    const project = extractProjectName(session.website_url);
+                    projectTimes[project] = (projectTimes[project] || 0) + session.duration;
+                    projectSessions[project] = (projectSessions[project] || 0) + 1;
+                }
+            });
+
+            // Update stats
+            document.getElementById('projectCount').textContent = Object.keys(projectTimes).length;
+            const topProject = Object.keys(projectTimes).reduce((a, b) => projectTimes[a] > projectTimes[b] ? a : b, 'None');
+            document.getElementById('topProject').textContent = topProject === 'None' ? 'None' : topProject;
+            document.getElementById('projectSessions').textContent = Object.values(projectSessions).reduce((a, b) => a + b, 0);
+
+            const totalTime = Object.values(projectTimes).reduce((a, b) => a + b, 0);
+            const totalSessions = Object.values(projectSessions).reduce((a, b) => a + b, 0);
+            const avgSession = totalSessions > 0 ? Math.round(totalTime / totalSessions) : 0;
+            document.getElementById('avgSession').textContent = formatDuration(avgSession);
+
+            // Create projects list
+            const sortedProjects = Object.keys(projectTimes).sort((a, b) => projectTimes[b] - projectTimes[a]);
+
+            projectsList.innerHTML = sortedProjects.map(project => `
+                <div class="activity-item">
+                    <div class="activity-time">${formatDuration(projectTimes[project])}</div>
+                    <div class="activity-app">${project}</div>
+                    <div class="activity-details">${projectSessions[project]} sessions</div>
+                    <span class="activity-type study">Project</span>
+                </div>
+            `).join('');
+
+            // Update charts
+            updateProjectsTimeChart(projectTimes);
+            updateProjectsSessionChart(projectSessions);
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return "0m";
+
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            }
+            return `${minutes}m`;
+        }
+
+        function updateProjectsTimeChart(projectTimes) {
+            const labels = Object.keys(projectTimes);
+            const durations = Object.values(projectTimes);
+
+            if (labels.length === 0) return;
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Time Spent (seconds)',
+                    data: durations,
+                    backgroundColor: '#ED3750',
+                    borderColor: '#ED3750',
+                    borderWidth: 1
+                }]
+            };
+
+            createBarChart('projectsTimeChart', chartData, 'Projects by Time');
+        }
+
+        function updateProjectsSessionChart(projectSessions) {
+            const labels = Object.keys(projectSessions);
+            const sessions = Object.values(projectSessions);
+
+            if (labels.length === 0) return;
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    data: sessions,
+                    backgroundColor: [
+                        '#ED3750', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+                        '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce'
+                    ],
+                    borderWidth: 0
+                }]
+            };
+
+            createPieChart('projectsSessionChart', chartData, 'Projects by Sessions');
+        }
+
+        function exportData() {
+            // Simple CSV export functionality
+            window.open('/api/export', '_blank');
+        }
     </script>
 </body>
 </html>
