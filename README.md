@@ -94,11 +94,11 @@ python3 src/dashboard/app.py
 
 ### Dashboard Features
 
-- **🎨 Modern UI**: Clean, Hackatime-inspired design with dark theme
-- **📊 Interactive Charts**: 4 data visualizations with real-time updates
-- **📱 Responsive**: Works on desktop, tablet, and mobile
-- **⚡ Real-time**: Auto-refreshes every 60 seconds
-- **🔒 Privacy-first**: All data stored locally
+- **Modern UI**: Clean, Hackatime-inspired design with dark theme
+- **Interactive Charts**: 4 data visualizations with real-time updates
+- **Responsive**: Works on desktop, tablet, and mobile
+- **Real-time**: Auto-refreshes every 60 seconds
+- **Privacy-first**: All data stored locally
 
 #### Charts Available
 - **Study Apps Breakdown**: Pie chart of application usage
@@ -142,5 +142,3 @@ Found a bug? Want to add a feature? PRs welcome! This is a student project, so c
 MIT License - because sharing is caring, and we're all in this together.
 
 ---
-
-*Made with ☕, 😭, and a concerning amount of caffeine by an IB student who should probably be studying instead of coding this.*
