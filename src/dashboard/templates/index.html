@@ -10,410 +10,307 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0e27;
-            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            color: #2d3748;
             min-height: 100vh;
-            padding: 20px;
+            padding: 24px;
+            line-height: 1.6;
         }
-        
+
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
-        
+
         .header {
             text-align: center;
-            margin-bottom: 35px;
-            padding: 20px;
-            background: linear-gradient(135deg, #1a1f3a 0%, #2d1b4e 100%);
-            border-radius: 15px;
-            border: 1px solid #3a3a5a;
-            position: relative;
+            margin-bottom: 48px;
+            padding: 32px 24px;
+            background: linear-gradient(135deg, #ff2c55 0%, #ff4757 100%);
+            border-radius: 16px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(255, 44, 85, 0.2);
         }
-        
+
         .header h1 {
-            font-size: 2.2em;
-            color: #ffa726;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(255, 167, 38, 0.3);
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
         }
-        
+
         .header .subtitle {
-            color: #ffcc80;
-            font-size: 0.95em;
-            margin-bottom: 15px;
+            font-size: 1.25rem;
+            opacity: 0.9;
+            font-weight: 500;
         }
-        
+
         .reset-btn {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+            top: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: none;
-            padding: 10px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 0.85em;
+            font-size: 0.875rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.3);
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
         }
-        
+
         .reset-btn:hover {
-            background: linear-gradient(135deg, #ff5252 0%, #ff1744 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.5);
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
         }
-        
-        .reset-btn:active {
-            transform: translateY(0);
-        }
-        
-        .ib-quote {
-            background: rgba(255, 183, 77, 0.1);
-            padding: 15px 25px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-style: italic;
-            color: #ffb74d;
-            font-size: 0.9em;
-            border-left: 4px solid #ff9800;
-            position: relative;
-        }
-        
-        .ib-quote:hover::after {
-            content: "IB Wisdom (or lack thereof)";
-            position: absolute;
-            bottom: -35px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1a1f3a;
-            color: #ffb74d;
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-size: 0.75em;
-            white-space: nowrap;
-            border: 1px solid #ff9800;
-        }
-        
+
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
         }
-        
+
         .stat-card {
-            background: linear-gradient(135deg, #1e2442 0%, #2a1f4a 100%);
-            padding: 25px;
-            border-radius: 15px;
-            border: 1px solid #3a3a5a;
+            background: white;
+            padding: 32px 24px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
             transition: all 0.3s ease;
             position: relative;
-            cursor: help;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        
+
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(255, 167, 38, 0.2);
-            border-color: #ffa726;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.15);
+            border-color: #ff2c55;
         }
-        
-        .stat-card:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1a1f3a;
-            color: #ffa726;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 0.8em;
-            white-space: nowrap;
-            border: 1px solid #ffa726;
-            z-index: 100;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-        
+
         .stat-card .label {
-            font-size: 0.85em;
-            color: #b0b0b0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
+            font-size: 0.875rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #718096;
+            margin-bottom: 16px;
         }
-        
+
         .stat-card .value {
-            font-size: 2.5em;
-            font-weight: bold;
-            background: linear-gradient(135deg, #ffa726 0%, #ffcc80 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #1a202c;
+            line-height: 1;
         }
-        
+
         .stat-card .subtext {
-            font-size: 0.75em;
-            color: #888;
+            font-size: 0.875rem;
+            color: #718096;
             margin-top: 8px;
             font-style: italic;
         }
-        
-        .list-container {
-            background: linear-gradient(135deg, #1e2442 0%, #2a1f4a 100%);
-            padding: 25px;
-            border-radius: 15px;
-            border: 1px solid #3a3a5a;
-            margin-bottom: 25px;
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        
-        .list-container h2 {
-            margin-bottom: 20px;
-            color: #ffa726;
-            font-size: 1.3em;
-            border-bottom: 2px solid #3a3a5a;
-            padding-bottom: 10px;
+
+        .section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .app-list, .file-list, .session-list, .website-list {
+
+        .section h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: #ff2c55;
+            border-radius: 2px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+        }
+
+        .list {
             list-style: none;
             max-height: 400px;
             overflow-y: auto;
         }
-        
-        .app-item, .file-item, .website-item {
-            padding: 15px;
-            border-bottom: 1px solid #2a2a4a;
+
+        .list-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f1f5f9;
             transition: all 0.2s ease;
-            position: relative;
-            cursor: help;
         }
-        
-        .app-item:hover, .file-item:hover, .website-item:hover {
-            background: rgba(255, 167, 38, 0.05);
-            padding-left: 20px;
-            border-left: 3px solid #ffa726;
+
+        .list-item:hover {
+            padding-left: 16px;
+            border-left: 4px solid #ff2c55;
+            background: #fef7f7;
         }
-        
-        .app-item:hover::after {
-            content: "Application used for studying";
-            position: absolute;
-            right: 10px;
-            top: -30px;
-            background: #1a1f3a;
-            color: #ffa726;
-            padding: 5px 12px;
-            border-radius: 5px;
-            font-size: 0.75em;
-            white-space: nowrap;
-            border: 1px solid #ffa726;
-            z-index: 10;
-        }
-        
-        .file-item:hover::after {
-            content: "Document or file worked on";
-            position: absolute;
-            right: 10px;
-            top: -30px;
-            background: #1a1f3a;
-            color: #ffa726;
-            padding: 5px 12px;
-            border-radius: 5px;
-            font-size: 0.75em;
-            white-space: nowrap;
-            border: 1px solid #ffa726;
-            z-index: 10;
-        }
-        
-        .website-item:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            right: 10px;
-            top: -30px;
-            background: #1a1f3a;
-            color: #ffa726;
-            padding: 5px 12px;
-            border-radius: 5px;
-            font-size: 0.75em;
-            white-space: nowrap;
-            border: 1px solid #ffa726;
-            z-index: 10;
-        }
-        
-        .app-item:last-child, .file-item:last-child, .website-item:last-child {
+
+        .list-item:last-child {
             border-bottom: none;
         }
-        
-        .app-name, .file-name, .website-name {
+
+        .item-name {
             font-weight: 600;
-            color: #e0e0e0;
-            font-size: 0.95em;
+            color: #1a202c;
+            font-size: 1rem;
         }
-        
-        .visit-count {
-            font-size: 0.75em;
-            color: #888;
-            margin-top: 3px;
+
+        .item-meta {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-top: 4px;
         }
-        
-        .app-time, .file-time, .website-time {
-            color: #ffa726;
-            font-weight: 700;
-            font-size: 1.1em;
-            padding: 5px 15px;
-            background: rgba(255, 167, 38, 0.1);
+
+        .item-time {
+            background: linear-gradient(135deg, #ff2c55 0%, #ff4757 100%);
+            color: white;
+            padding: 8px 16px;
             border-radius: 20px;
-        }
-        
-        .session-item {
-            padding: 15px;
-            border-left: 4px solid #4caf50;
-            background: linear-gradient(90deg, rgba(76, 175, 80, 0.08) 0%, transparent 100%);
-            margin-bottom: 10px;
-            border-radius: 6px;
-            font-size: 0.9em;
-            transition: all 0.2s ease;
-            position: relative;
-            cursor: help;
-        }
-        
-        .session-item:hover {
-            background: linear-gradient(90deg, rgba(76, 175, 80, 0.15) 0%, transparent 100%);
-            padding-left: 20px;
-            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.2);
-        }
-        
-        .session-item.procrastination {
-            border-left-color: #ff6b6b;
-            background: linear-gradient(90deg, rgba(255, 107, 107, 0.08) 0%, transparent 100%);
-        }
-        
-        .session-item.procrastination:hover {
-            background: linear-gradient(90deg, rgba(255, 107, 107, 0.15) 0%, transparent 100%);
-            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.2);
-        }
-        
-        .session-item:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            right: 10px;
-            top: -35px;
-            background: #1a1f3a;
-            color: #ffa726;
-            padding: 8px 15px;
-            border-radius: 5px;
-            font-size: 0.8em;
+            font-weight: 700;
+            font-size: 0.875rem;
             white-space: nowrap;
-            border: 1px solid #ffa726;
-            z-index: 10;
-            max-width: 300px;
-            white-space: normal;
         }
-        
+
+        .session-item {
+            padding: 16px;
+            border-left: 4px solid #48bb78;
+            background: #f0fff4;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .session-item:hover {
+            background: #e6fffa;
+            padding-left: 20px;
+        }
+
+        .session-item.procrastination {
+            border-left-color: #ff2c55;
+            background: #fef5f5;
+        }
+
+        .session-item.procrastination:hover {
+            background: #ffeaea;
+        }
+
         .session-time {
-            font-size: 0.85em;
-            color: #b0b0b0;
-            margin-bottom: 5px;
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 8px;
             font-weight: 600;
         }
-        
+
         .session-app {
             font-weight: 700;
-            color: #e0e0e0;
-            margin-bottom: 5px;
+            color: #1a202c;
+            margin-bottom: 8px;
         }
-        
+
         .session-details {
-            color: #ffa726;
-            font-size: 0.85em;
-            margin-top: 5px;
+            color: #ff2c55;
+            font-size: 0.875rem;
             font-style: italic;
             word-break: break-all;
         }
-        
+
         .session-type {
             display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.75em;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-top: 5px;
+            margin-top: 8px;
         }
-        
+
         .session-type.study {
-            background: rgba(76, 175, 80, 0.2);
-            color: #81c784;
+            background: rgba(72, 187, 120, 0.2);
+            color: #22543d;
         }
-        
+
         .session-type.procrastination {
-            background: rgba(255, 107, 107, 0.2);
-            color: #ff8a80;
+            background: rgba(255, 44, 85, 0.2);
+            color: #742a2a;
         }
-        
+
         .loading {
             text-align: center;
-            padding: 40px;
-            color: #888;
+            padding: 48px;
+            color: #718096;
             font-style: italic;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #cbd5e0;
         }
-        
-        .joke-banner {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 0.9em;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
-        }
-        
+
         /* Scrollbar styling */
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 8px;
         }
-        
+
         ::-webkit-scrollbar-track {
-            background: #1a1f3a;
-            border-radius: 5px;
+            background: #f1f5f9;
         }
-        
+
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
-            border-radius: 5px;
+            background: #cbd5e0;
+            border-radius: 4px;
         }
-        
+
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #ffb74d 0%, #ffa726 100%);
+            background: #a0aec0;
         }
-        
+
         @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .header {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
             .stats-grid {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
-            
-            .reset-btn {
-                position: static;
-                margin-top: 15px;
-                width: 100%;
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
             }
-            
-            .stat-card:hover::after,
-            .app-item:hover::after,
-            .file-item:hover::after,
-            .website-item:hover::after,
-            .session-item:hover::after {
-                display: none;
+
+            .section {
+                padding: 24px 16px;
             }
         }
     </style>
@@ -421,131 +318,78 @@
 <body>
     <div class="container">
         <div class="header">
-            <button class="reset-btn" onclick="resetAllData()">Reset All Data</button>
-            <h1>Study Timer Dashboard</h1>
-            <div class="subtitle">Because manually tracking time is so 2023</div>
-            <div class="ib-quote" id="ibQuote">Loading motivational quote...</div>
+            <button class="reset-btn" onclick="resetAllData()">Reset Data</button>
+            <h1>Study Timer</h1>
+            <div class="subtitle">Track your academic progress</div>
         </div>
-        
-        <div class="joke-banner" id="jokeBanner">
-            Tracking your procrastination since 5 minutes ago...
-        </div>
-        
+
         <div class="stats-grid">
-            <div class="stat-card" data-tooltip="Time spent on productive study apps and websites">
+            <div class="stat-card">
                 <div class="label">Study Time Today</div>
                 <div class="value" id="todayStudy">0m</div>
-                <div class="subtext">Keep grinding! Or start...</div>
+                <div class="subtext">Keep up the momentum!</div>
             </div>
-            
-            <div class="stat-card" data-tooltip="Time spent on non-study activities (we all do it)">
-                <div class="label">Procrastination Time</div>
-                <div class="value" id="todayProcrastination">0m</div>
-                <div class="subtext">Honesty is the first step</div>
-            </div>
-            
-            <div class="stat-card" data-tooltip="Number of different study sessions you had today">
+
+            <div class="stat-card">
                 <div class="label">Sessions Today</div>
                 <div class="value" id="todaySessions">0</div>
-                <div class="subtext">Each one counts!</div>
+                <div class="subtext">Focus sessions completed</div>
             </div>
-            
-            <div class="stat-card" data-tooltip="Consecutive days with at least some study time">
+
+            <div class="stat-card">
                 <div class="label">Current Streak</div>
                 <div class="value" id="currentStreak">0</div>
-                <div class="subtext">Don't break it now</div>
+                <div class="subtext">Consecutive study days</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="label">Procrastination Time</div>
+                <div class="value" id="todayProcrastination">0m</div>
+                <div class="subtext">Time spent off-task</div>
             </div>
         </div>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px;">
-            <div class="list-container">
-                <h2>Top Study Apps This Week</h2>
-                <ul class="app-list" id="appList">
-                    <li class="loading">Waiting for study data...</li>
+
+        <div class="grid">
+            <div class="section">
+                <h2>Top Study Apps</h2>
+                <ul class="list" id="appList">
+                    <li class="loading">Start studying to see your app usage!</li>
                 </ul>
             </div>
-            
-            <div class="list-container">
-                <h2>Recently Worked On</h2>
-                <ul class="file-list" id="fileList">
-                    <li class="loading">No files tracked yet</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px;">
-            <div class="list-container">
-                <h2>Study Websites This Week</h2>
-                <ul class="website-list" id="studyWebsiteList">
-                    <li class="loading">No study websites yet</li>
-                </ul>
-            </div>
-            
-            <div class="list-container">
-                <h2>Procrastination Websites</h2>
-                <ul class="website-list" id="procrastinationWebsiteList">
-                    <li class="loading">Clean record... for now</li>
+
+            <div class="section">
+                <h2>Study Websites</h2>
+                <ul class="list" id="studyWebsiteList">
+                    <li class="loading">No study websites tracked yet</li>
                 </ul>
             </div>
         </div>
-        
-        <div class="list-container">
-            <h2>Recent Activity Timeline (Last 24 Hours)</h2>
-            <div class="session-list" id="sessionList">
-                <div class="loading">No recent activity to display</div>
+
+        <div class="grid">
+            <div class="section">
+                <h2>Recent Files</h2>
+                <ul class="list" id="fileList">
+                    <li class="loading">Open some documents to track your work!</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Procrastination Sites</h2>
+                <ul class="list" id="procrastinationWebsiteList">
+                    <li class="loading">Clean record so far!</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Recent Activity</h2>
+            <div id="sessionList">
+                <div class="loading">Start the tracker to see your activity timeline!</div>
             </div>
         </div>
     </div>
-    
+
     <script>
-        const ibJokes = [
-            "Remember: Your IA is due tomorrow, not 'tomorrow tomorrow'",
-            "CAS hours don't count if you're just thinking about doing CAS",
-            "Extended Essay? More like Extended Suffering",
-            "TOK: Proving you can overthink literally anything",
-            "Sleep deprivation is not a Learner Profile attribute",
-            "Your study-to-coffee ratio is concerning",
-            "Yes, watching YouTube counts as research. No, we're not tracking that as study time.",
-            "Breaking News: Student discovers 8 hours of study does not equal 8 hours on Reddit",
-            "The IB Learner Profile forgot to include 'Caffeinated'",
-            "Your Extended Essay word count: 3,847. Words actually written: 12.",
-        ];
-        
-        function updateJokeBanner() {
-            const banner = document.getElementById('jokeBanner');
-            banner.textContent = ibJokes[Math.floor(Math.random() * ibJokes.length)];
-        }
-        
-        async function resetAllData() {
-            if (!confirm('Are you SURE you want to delete ALL your study data? This cannot be undone!')) {
-                return;
-            }
-            
-            if (!confirm('Really? This will permanently delete all sessions, files, and statistics. Last chance!')) {
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/reset', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert('All data has been reset! Dashboard will refresh now.');
-                    location.reload();
-                } else {
-                    alert('Error resetting data: ' + result.message);
-                }
-            } catch (error) {
-                alert('Error resetting data: ' + error.message);
-            }
-        }
-        
         async function fetchData(endpoint) {
             try {
                 const response = await fetch(endpoint);
@@ -555,132 +399,148 @@
                 return null;
             }
         }
-        
+
+        async function resetAllData() {
+            if (!confirm('Are you sure you want to delete ALL your study data? This cannot be undone!')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/reset', { method: 'POST' });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('All data has been reset! Dashboard will refresh.');
+                    location.reload();
+                } else {
+                    alert('Error resetting data: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error resetting data: ' + error.message);
+            }
+        }
+
         async function updateTodayStats() {
             const data = await fetchData('/api/today');
             if (!data) return;
-            
+
             document.getElementById('todayStudy').textContent = data.study_time_formatted;
             document.getElementById('todayProcrastination').textContent = data.procrastination_time_formatted;
             document.getElementById('todaySessions').textContent = data.total_sessions;
-            document.getElementById('ibQuote').textContent = data.ib_quote;
         }
-        
+
         async function updateSummaryStats() {
             const data = await fetchData('/api/stats/summary');
             if (!data) return;
-            
+
             document.getElementById('currentStreak').textContent = data.current_streak;
         }
-        
+
         async function updateAppList() {
             const data = await fetchData('/api/apps');
             const appList = document.getElementById('appList');
-            
+
             if (!data || data.length === 0) {
-                appList.innerHTML = '<li class="loading">Start studying to see your top apps here!</li>';
+                appList.innerHTML = '<li class="loading">Start studying to see your app usage!</li>';
                 return;
             }
-            
+
             appList.innerHTML = data.map(app => `
-                <li class="app-item">
-                    <span class="app-name">${app.app_name}</span>
-                    <span class="app-time">${app.duration_formatted}</span>
+                <li class="list-item">
+                    <div>
+                        <div class="item-name">${app.app_name}</div>
+                    </div>
+                    <span class="item-time">${app.duration_formatted}</span>
                 </li>
             `).join('');
         }
-        
+
         async function updateFileList() {
             const data = await fetchData('/api/files');
             const fileList = document.getElementById('fileList');
-            
+
             if (!data || data.length === 0) {
-                fileList.innerHTML = '<li class="loading">No files tracked yet - open some documents!</li>';
+                fileList.innerHTML = '<li class="loading">Open some documents to track your work!</li>';
                 return;
             }
-            
+
             fileList.innerHTML = data.slice(0, 8).map(file => `
-                <li class="file-item">
+                <li class="list-item">
                     <div>
-                        <div class="file-name">${file.file_path}</div>
-                        <div style="color: #888; font-size: 0.8em; margin-top: 3px;">${file.app_name}</div>
+                        <div class="item-name">${file.file_path}</div>
+                        <div class="item-meta">${file.app_name}</div>
                     </div>
-                    <span class="file-time">${file.duration_formatted}</span>
+                    <span class="item-time">${file.duration_formatted}</span>
                 </li>
             `).join('');
         }
-        
+
         async function updateStudyWebsites() {
             const data = await fetchData('/api/websites/study');
             const list = document.getElementById('studyWebsiteList');
-            
+
             if (!data || data.length === 0) {
                 list.innerHTML = '<li class="loading">No study websites tracked yet</li>';
                 return;
             }
-            
+
             list.innerHTML = data.map(site => `
-                <li class="website-item" data-tooltip="${site.visit_count} visits • ${site.domain}">
+                <li class="list-item">
                     <div>
-                        <div class="website-name">${site.domain}</div>
-                        <div class="visit-count">${site.visit_count} visits</div>
+                        <div class="item-name">${site.domain}</div>
+                        <div class="item-meta">${site.visit_count} visits</div>
                     </div>
-                    <span class="website-time">${site.duration_formatted}</span>
+                    <span class="item-time">${site.duration_formatted}</span>
                 </li>
             `).join('');
         }
-        
+
         async function updateProcrastinationWebsites() {
             const data = await fetchData('/api/websites/procrastination');
             const list = document.getElementById('procrastinationWebsiteList');
-            
+
             if (!data || data.length === 0) {
-                list.innerHTML = '<li class="loading">Clean record! No procrastination detected...</li>';
+                list.innerHTML = '<li class="loading">Clean record so far!</li>';
                 return;
             }
-            
+
             list.innerHTML = data.map(site => `
-                <li class="website-item" data-tooltip="${site.visit_count} visits • ${site.domain}">
+                <li class="list-item">
                     <div>
-                        <div class="website-name">${site.domain}</div>
-                        <div class="visit-count">${site.visit_count} visits</div>
+                        <div class="item-name">${site.domain}</div>
+                        <div class="item-meta">${site.visit_count} visits</div>
                     </div>
-                    <span class="website-time">${site.duration_formatted}</span>
+                    <span class="item-time">${site.duration_formatted}</span>
                 </li>
             `).join('');
         }
-        
+
         async function updateSessions() {
             const data = await fetchData('/api/recent_sessions');
             const sessionList = document.getElementById('sessionList');
-            
+
             if (!data || data.length === 0) {
-                sessionList.innerHTML = '<div class="loading">No recent activity - start the tracker to see sessions here!</div>';
+                sessionList.innerHTML = '<div class="loading">Start the tracker to see your activity timeline!</div>';
                 return;
             }
-            
+
             sessionList.innerHTML = data.slice(0, 12).map(session => {
                 const className = session.is_procrastination ? 'session-item procrastination' : 'session-item';
-                const type = session.is_study ? 'Studying' : session.is_procrastination ? 'Procrastinating' : 'Other';
+                const type = session.is_study ? 'Study' : session.is_procrastination ? 'Break' : 'Other';
                 const typeClass = session.is_procrastination ? 'procrastination' : 'study';
                 const time = new Date(session.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                
+
                 let details = '';
-                let tooltipText = `${type} in ${session.app_name} for ${session.duration_formatted}`;
-                
                 if (session.website_domain) {
                     details = session.website_domain;
-                    tooltipText += ` • Website: ${details}`;
                 } else if (session.file_path) {
-                    details = session.file_path;
-                    tooltipText += ` • File: ${details}`;
-                } else if (session.window_title && session.window_title.length > 0) {
-                    details = session.window_title;
-                    if (details.length > 50) details = details.substring(0, 50) + '...';
+                    details = session.file_path.split('/').pop();
+                } else if (session.window_title) {
+                    details = session.window_title.length > 50 ? session.window_title.substring(0, 50) + '...' : session.window_title;
                 }
-                
+
                 return `
-                    <div class="${className}" data-tooltip="${tooltipText}">
+                    <div class="${className}">
                         <div class="session-time">${time} • ${session.duration_formatted}</div>
                         <div class="session-app">${session.app_name}</div>
                         ${details ? `<div class="session-details">${details}</div>` : ''}
@@ -689,7 +549,7 @@
                 `;
             }).join('');
         }
-        
+
         async function refreshAll() {
             await Promise.all([
                 updateTodayStats(),
@@ -701,16 +561,12 @@
                 updateSessions()
             ]);
         }
-        
+
         // Initial load
         refreshAll();
-        updateJokeBanner();
-        
+
         // Refresh data every 60 seconds
         setInterval(refreshAll, 60000);
-        
-        // Rotate joke banner every 30 seconds
-        setInterval(updateJokeBanner, 30000);
     </script>
 </body>
 </html>
