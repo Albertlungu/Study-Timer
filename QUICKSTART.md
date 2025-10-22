@@ -1,6 +1,6 @@
 # StudyTime - Quick Reference
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Setup (first time only)
@@ -14,9 +14,9 @@ pip install -r requirements.txt
 python src/init_db.py
 ```
 
-## 🎯 Running the Application
+## Running the Application
 
-### 🔥 One-Command Start (NEW!)
+### One-Command Start
 ```bash
 # Start everything in one terminal!
 cd ~/Documents/GitHub/Study-Timer
@@ -45,7 +45,7 @@ python src/dashboard/app.py
 
 Then open http://localhost:5000 in your browser!
 
-## 🔧 Configuration
+## Configuration
 
 Edit `src/config.py` to customize:
 - **TRACKING_INTERVAL**: How often to check activity (default: 5 seconds)
@@ -54,13 +54,13 @@ Edit `src/config.py` to customize:
 - **STUDY_WEBSITES**: Websites considered "study" time
 - **PROCRASTINATION_WEBSITES**: Websites that... aren't studying 😅
 
-## 📊 What Gets Tracked?
+## What Gets Tracked?
 
-✅ **Applications**: Any app in your STUDY_APPS list  
-✅ **Files**: Document names you're working on  
-✅ **Websites**: URLs in Chrome, Safari, Firefox  
-✅ **Time**: Duration of each session  
-✅ **Categories**: Study vs. Procrastination  
+**Applications**: Any app in your STUDY_APPS list  
+**Files**: Document names you're working on  
+**Websites**: URLs in Chrome, Safari, Firefox  
+**Time**: Duration of each session  
+**Categories**: Study vs. Procrastination  
 
 ## 🎨 IB Student Features
 
@@ -72,11 +72,11 @@ The dashboard includes:
 - **Study streak** counter (days in a row!)
 - **Procrastination tracking** (we won't judge... much)
 
-## 🔐 Privacy
+## Privacy
 
 All data is stored locally in `data/study_data.db`. Nothing is sent to the cloud. Your procrastination secrets are safe with us!
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### "Permission Denied" Errors
 Grant Accessibility permissions:
@@ -95,7 +95,7 @@ AppleScript needs permission to control your browser:
 1. System Preferences → Security & Privacy → Privacy → Automation
 2. Allow Terminal/Python to control Chrome/Safari/Firefox
 
-## 📝 Database Schema
+## Database Schema
 
 The tracker uses SQLite with three main tables:
 
@@ -103,7 +103,7 @@ The tracker uses SQLite with three main tables:
 - **activity_log**: Detailed log of every check (every 5 seconds)
 - **daily_stats**: Aggregated daily statistics
 
-## 🤝 Contributing
+## Contributing
 
 Found a bug? Want a feature? This is a student project, so:
 1. Fork it
@@ -111,7 +111,7 @@ Found a bug? Want a feature? This is a student project, so:
 3. PR it
 4. Profit! (in IB points, not actual money)
 
-## 💡 Tips for IB Students
+## Tips for IB Students
 
 - **Theory of Knowledge**: Is tracking your study time studying, or procrastinating about studying?
 - **Extended Essay**: Track your research sessions! See how much time you *actually* spend on it.
@@ -120,4 +120,4 @@ Found a bug? Want a feature? This is a student project, so:
 
 ---
 
-Made with ☕ and existential dread by an IB student who should be studying right now.
+Made with redbull and existential dread by an IB student who should be studying right now.

@@ -256,4 +256,4 @@ if __name__ == "__main__":
         print(f"  Type: {google_info['type']}")
         print(f"  ID: {google_info['id']}")
     
-    print("\n✅ Test complete!")
+    print("\nTest complete!")

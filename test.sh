@@ -10,7 +10,7 @@ echo ""
 # Activate venv if it exists
 if [ -d "venv" ]; then
     source venv/bin/activate
-    echo "✅ Virtual environment activated"
+    echo "Virtual environment activated"
 else
     echo "⚠️  No virtual environment found. Run ./start.sh first!"
     exit 1
@@ -30,7 +30,7 @@ echo "3️⃣ Testing File Tracker..."
 python src/trackers/file_tracker.py
 echo ""
 
-echo "✅ All component tests complete!"
+echo "All component tests complete!"
 echo ""
 echo "📝 To test the full system:"
 echo "   Terminal 1: python src/main.py"

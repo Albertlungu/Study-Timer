@@ -32,12 +32,12 @@ def debug_classification():
         print(f"   ❌ {app_name} is in PROCRASTINATION_APPS")
         return (False, True)
     else:
-        print(f"   ✅ {app_name} is NOT in PROCRASTINATION_APPS")
+        print(f"   {app_name} is NOT in PROCRASTINATION_APPS")
 
     # Step 2: Check if study app
     print("\n2. Checking STUDY_APPS...")
     if app_name in STUDY_APPS:
-        print(f"   ✅ {app_name} is in STUDY_APPS")
+        print(f"   {app_name} is in STUDY_APPS")
 
         # Step 3: Check if browser
         tracker = BrowserTracker()
@@ -45,7 +45,7 @@ def debug_classification():
         print(f"\n3. Checking if browser: {is_browser}")
 
         if is_browser and url:
-            print("   ✅ Browser with URL detected")
+            print("   Browser with URL detected")
 
             # Step 4: Categorize URL
             print("\n4. Categorizing URL...")
@@ -53,7 +53,7 @@ def debug_classification():
             print(f"   URL category: {category}")
 
             if category == 'study':
-                print("   ✅ URL is STUDY")
+                print("   URL is STUDY")
                 return (True, False)
             elif category == 'procrastination':
                 print("   ❌ URL is PROCRASTINATION")
@@ -62,7 +62,7 @@ def debug_classification():
                 print("   ❌ URL is UNKNOWN")
                 return (False, False)
         else:
-            print("   ✅ Non-browser study app")
+            print("   Non-browser study app")
             return (True, False)
     else:
         print(f"   ❌ {app_name} is NOT in STUDY_APPS")
@@ -104,7 +104,7 @@ def test_database_creation():
     print(f'Session would be created: {is_study or is_procrastination}')
 
     if is_study or is_procrastination:
-        print("✅ Would create session")
+        print("Would create session")
 
         # Create test session
         now = datetime.now()
@@ -115,7 +115,7 @@ def test_database_creation():
         """, (app_name, window_title, url, now, is_study, is_procrastination, 300))
 
         session_id = cursor.lastrowid
-        print(f"✅ Session created with ID: {session_id}")
+        print(f"Session created with ID: {session_id}")
 
         # Test dashboard queries
         print("\n=== DASHBOARD QUERY TESTS ===")

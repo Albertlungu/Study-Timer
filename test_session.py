@@ -159,8 +159,8 @@ def test_session_creation():
     conn.close()
 
     print("\n=== TEST COMPLETE ===")
-    print("✅ Session created successfully")
-    print("✅ Dashboard APIs tested")
+    print("Session created successfully")
+    print("Dashboard APIs tested")
     print("🔄 Check the dashboard at http://localhost:5000")
     print("   You should see Comet listed in apps and Google Docs in websites")
 

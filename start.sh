@@ -15,7 +15,7 @@ fi
 if [ ! -d "venv" ]; then
     echo "📦 Creating virtual environment..."
     python3 -m venv venv
-    echo "✅ Virtual environment created"
+    echo "Virtual environment created"
 fi
 
 # Activate virtual environment
@@ -32,11 +32,11 @@ if [ ! -f "data/study_data.db" ]; then
     echo "🗄️  Initializing database..."
     python src/init_db.py
 else
-    echo "✅ Database already exists"
+    echo "Database already exists"
 fi
 
 echo ""
-echo "✅ Setup complete!"
+echo "Setup complete!"
 echo ""
 echo "📝 Next steps:"
 echo "   1. Grant Accessibility permissions:"

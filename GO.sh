@@ -11,7 +11,7 @@ cd ~/Documents/GitHub/Study-Timer
 # Step 1: Make all scripts executable
 echo "🔧 Step 1: Making scripts executable..."
 chmod +x *.sh
-echo "✅ Done!"
+echo "Done!"
 echo ""
 
 # Step 2: Run setup
@@ -21,7 +21,7 @@ echo ""
 
 # Step 3: Instructions for running
 echo "╔═══════════════════════════════════════════════════════════════╗"
-echo "║                    ✅ SETUP COMPLETE!                         ║"
+echo "║                    SETUP COMPLETE!                         ║"
 echo "╚═══════════════════════════════════════════════════════════════╝"
 echo ""
 echo "📋 NEXT STEPS:"

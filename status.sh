@@ -9,7 +9,7 @@ echo ""
 
 # Check if virtual environment exists
 if [ -d "venv" ]; then
-    echo "✅ Virtual environment: EXISTS"
+    echo "Virtual environment: EXISTS"
 else
     echo "❌ Virtual environment: NOT FOUND"
     echo "   Run: ./start.sh to create it"
@@ -17,7 +17,7 @@ fi
 
 # Check if database exists
 if [ -f "data/study_data.db" ]; then
-    echo "✅ Database: EXISTS"
+    echo "Database: EXISTS"
     
     # Get database stats
     if [ -d "venv" ]; then
@@ -55,7 +55,7 @@ echo ""
 
 # Check if tracker is running
 if pgrep -f "python.*src/main.py" > /dev/null; then
-    echo "✅ Tracker: RUNNING"
+    echo "Tracker: RUNNING"
     PID=$(pgrep -f "python.*src/main.py")
     echo "   PID: $PID"
 else
@@ -65,7 +65,7 @@ fi
 
 # Check if dashboard is running
 if pgrep -f "python.*dashboard/app.py" > /dev/null; then
-    echo "✅ Dashboard: RUNNING"
+    echo "Dashboard: RUNNING"
     PID=$(pgrep -f "python.*dashboard/app.py")
     echo "   PID: $PID"
     echo "   URL: http://localhost:5000"

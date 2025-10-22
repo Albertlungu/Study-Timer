@@ -342,4 +342,4 @@ if __name__ == "__main__":
         print()
         time.sleep(1)
     
-    print("✅ Test complete!")
+    print("Test complete!")

@@ -216,12 +216,12 @@ Contributions welcome! See CONTRIBUTING.md for:
 ## 🎯 Success Metrics
 
 A successful Study Timer:
-- ✅ Runs reliably in background
-- ✅ Accurately captures study sessions
-- ✅ Provides useful insights
-- ✅ Respects privacy completely
-- ✅ Actually helps students
-- ✅ Makes IB slightly less painful
+- Runs reliably in background
+- Accurately captures study sessions
+- Provides useful insights
+- Respects privacy completely
+- Actually helps students
+- Makes IB slightly less painful
 
 ## 🙏 Acknowledgments
 

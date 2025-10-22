@@ -31,16 +31,16 @@ No manual timers. No button pressing. Just study (or procrastinate) and it track
 
 📊 FEATURES
 ───────────────────────────────────────────────────────────────────────────────
-  ✅ Automatic tracking - runs silently in background
-  ✅ Beautiful web dashboard - real-time stats with charts
-  ✅ File-level tracking - knows WHICH documents you work on
-  ✅ Browser URL extraction - Chrome, Safari, Firefox supported
-  ✅ Study vs. Procrastination - categorizes your activities
-  ✅ Session history - see timeline of your day
-  ✅ Weekly charts - visualize study patterns
-  ✅ Study streaks - track consecutive study days 🔥
-  ✅ IB-themed humor - because you need to laugh to survive
-  ✅ Privacy first - all data stored locally, never leaves your Mac
+  Automatic tracking - runs silently in background
+  Beautiful web dashboard - real-time stats with charts
+  File-level tracking - knows WHICH documents you work on
+  Browser URL extraction - Chrome, Safari, Firefox supported
+  Study vs. Procrastination - categorizes your activities
+  Session history - see timeline of your day
+  Weekly charts - visualize study patterns
+  Study streaks - track consecutive study days 🔥
+  IB-themed humor - because you need to laugh to survive
+  Privacy first - all data stored locally, never leaves your Mac
 
 
 🚀 QUICK START

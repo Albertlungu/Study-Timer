@@ -8,7 +8,7 @@ Be nice. We're all stressed IB students here. Help each other out, and remember 
 
 ## How Can I Contribute?
 
-### Reporting Bugs 🐛
+### Reporting Bugs
 
 Before creating bug reports, please check existing issues to avoid duplicates. When creating a bug report, include:
 
@@ -19,7 +19,7 @@ Before creating bug reports, please check existing issues to avoid duplicates. W
 - **System info**: macOS version, Python version
 - **Log files** from `logs/tracker.log`
 
-### Suggesting Features 💡
+### Suggesting Features
 
 Feature suggestions are welcome! Before suggesting:
 
@@ -28,7 +28,7 @@ Feature suggestions are welcome! Before suggesting:
 3. Provide **use cases** (especially IB-related ones!)
 4. Be specific about what you want
 
-### Pull Requests 🔀
+### Pull Requests
 
 1. Fork the repo
 2. Create a branch: `git checkout -b feature/amazing-feature`
@@ -222,6 +222,6 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-Remember: We're all in this IB journey together. Every contribution helps a stressed student somewhere! 📚💪
+Remember: We're all in this IB journey together. Every contribution helps a stressed student somewhere! 
 
-Thank you for making Study Timer better! 🙏
+Thank you for making Study Timer better!

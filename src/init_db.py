@@ -97,7 +97,7 @@ def init_database():
     conn.commit()
     conn.close()
     
-    print("✅ Database initialized successfully!")
+    print("Database initialized successfully!")
     print(f"📍 Location: {DATABASE_PATH}")
     print("\n🚀 Ready to track your study sessions!")
     print("\nNext steps:")

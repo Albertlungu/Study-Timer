@@ -13,7 +13,7 @@ def test_api_endpoint(url, description):
     """Test an API endpoint"""
     try:
         response = requests.get(url, timeout=5)
-        print(f"✅ {description}: {response.status_code}")
+        print(f"{description}: {response.status_code}")
         if response.status_code == 200:
             data = response.json()
             return data
@@ -101,7 +101,7 @@ def main():
     print(f"   Study apps: {len(results.get('App Stats', []))}")
     print(f"   Study websites: {len(results.get('Study Websites', []))}")
 
-    print("\n✅ Dashboard test complete!")
+    print("\nDashboard test complete!")
     print("   If dashboard is running, visit: http://localhost:5000")
 
 if __name__ == "__main__":

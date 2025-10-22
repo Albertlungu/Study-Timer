@@ -6,7 +6,7 @@ echo ""
 # Check if Comet has accessibility permissions
 echo "Checking if Comet has Accessibility permissions..."
 if /usr/bin/sqlite3 "/Library/Application Support/com.apple.TCC/TCC.db" "SELECT client FROM access WHERE service='kTCCServiceAccessibility' AND client LIKE '%Comet%';" 2>/dev/null | grep -q Comet; then
-    echo "✅ Comet has Accessibility permissions"
+    echo "Comet has Accessibility permissions"
 else
     echo "❌ Comet does NOT have Accessibility permissions"
     echo ""
@@ -18,7 +18,7 @@ fi
 # Check if the Study Timer script has permissions
 SCRIPT_NAME=$(basename "$0" .sh)
 if /usr/bin/sqlite3 "/Library/Application Support/com.apple.TCC/TCC.db" "SELECT client FROM access WHERE service='kTCCServiceAccessibility' AND client LIKE '%python%' OR client LIKE '%Study%';" 2>/dev/null | grep -q -E "(python|Study)"; then
-    echo "✅ Study Timer appears to have Accessibility permissions"
+    echo "Study Timer appears to have Accessibility permissions"
 else
     echo "❌ Study Timer does NOT have Accessibility permissions"
     echo ""
