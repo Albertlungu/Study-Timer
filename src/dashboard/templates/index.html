@@ -31,6 +31,7 @@
             background: linear-gradient(135deg, #1a1f3a 0%, #2d1b4e 100%);
             border-radius: 15px;
             border: 1px solid #3a3a5a;
+            position: relative;
         }
         
         .header h1 {
@@ -44,6 +45,32 @@
             color: #ffcc80;
             font-size: 0.95em;
             margin-bottom: 15px;
+        }
+        
+        .reset-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.3);
+        }
+        
+        .reset-btn:hover {
+            background: linear-gradient(135deg, #ff5252 0%, #ff1744 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.5);
+        }
+        
+        .reset-btn:active {
+            transform: translateY(0);
         }
         
         .ib-quote {
@@ -375,6 +402,12 @@
                 grid-template-columns: 1fr;
             }
             
+            .reset-btn {
+                position: static;
+                margin-top: 15px;
+                width: 100%;
+            }
+            
             .stat-card:hover::after,
             .app-item:hover::after,
             .file-item:hover::after,
@@ -388,6 +421,7 @@
 <body>
     <div class="container">
         <div class="header">
+            <button class="reset-btn" onclick="resetAllData()">Reset All Data</button>
             <h1>Study Timer Dashboard</h1>
             <div class="subtitle">Because manually tracking time is so 2023</div>
             <div class="ib-quote" id="ibQuote">Loading motivational quote...</div>
@@ -480,6 +514,36 @@
         function updateJokeBanner() {
             const banner = document.getElementById('jokeBanner');
             banner.textContent = ibJokes[Math.floor(Math.random() * ibJokes.length)];
+        }
+        
+        async function resetAllData() {
+            if (!confirm('Are you SURE you want to delete ALL your study data? This cannot be undone!')) {
+                return;
+            }
+            
+            if (!confirm('Really? This will permanently delete all sessions, files, and statistics. Last chance!')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('All data has been reset! Dashboard will refresh now.');
+                    location.reload();
+                } else {
+                    alert('Error resetting data: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error resetting data: ' + error.message);
+            }
         }
         
         async function fetchData(endpoint) {

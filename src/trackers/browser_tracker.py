@@ -2,7 +2,7 @@
 Browser Tracker Module
 
 Specialized tracking for web browsers to extract URLs and page titles.
-Supports Chrome, Safari, and Firefox.
+Supports Chrome, Safari, Firefox, Arc, and Comet.
 """
 
 import subprocess
@@ -14,7 +14,7 @@ class BrowserTracker:
     """Tracks browser activity and extracts URLs"""
     
     def __init__(self):
-        self.supported_browsers = ['Google Chrome', 'Safari', 'Firefox']
+        self.supported_browsers = ['Google Chrome', 'Safari', 'Firefox', 'Arc', 'Comet']
     
     def is_browser(self, app_name):
         """
@@ -61,6 +61,124 @@ class BrowserTracker:
         except Exception as e:
             print(f"Error getting Chrome URL: {e}")
         
+        return None, None
+    
+    def get_arc_url(self):
+        """
+        Get the current URL from Arc browser using AppleScript
+        Arc uses the same structure as Chrome (Chromium-based)
+        
+        Returns:
+            tuple: (url, page_title) or (None, None) if unavailable
+        """
+        script = '''
+        tell application "Arc"
+            if (count of windows) > 0 then
+                set currentTab to active tab of front window
+                set currentURL to URL of currentTab
+                set currentTitle to title of currentTab
+                return currentURL & "|SPLIT|" & currentTitle
+            end if
+        end tell
+        '''
+        
+        try:
+            result = subprocess.run(
+                ['osascript', '-e', script],
+                capture_output=True,
+                text=True,
+                timeout=2
+            )
+            
+            if result.returncode == 0 and result.stdout.strip():
+                parts = result.stdout.strip().split('|SPLIT|')
+                if len(parts) == 2:
+                    return parts[0], parts[1]
+        except Exception as e:
+            print(f"Error getting Arc URL: {e}")
+        
+        return None, None
+    
+    def get_comet_url(self):
+        """
+        Get the current URL from Comet browser using AppleScript
+        Comet is Chromium-based, so we'll try Chrome-style syntax first
+        
+        Returns:
+            tuple: (url, page_title) or (None, None) if unavailable
+        """
+        # Try Chrome-style syntax first (Comet is Chromium-based)
+        script = '''
+        tell application "Comet"
+            if (count of windows) > 0 then
+                set currentTab to active tab of front window
+                set currentURL to URL of currentTab
+                set currentTitle to title of currentTab
+                return currentURL & "|SPLIT|" & currentTitle
+            end if
+        end tell
+        '''
+        
+        try:
+            result = subprocess.run(
+                ['osascript', '-e', script],
+                capture_output=True,
+                text=True,
+                timeout=2
+            )
+            
+            print(f"[DEBUG COMET] Chrome-style Return code: {result.returncode}")
+            print(f"[DEBUG COMET] Chrome-style Stdout: {result.stdout.strip()}")
+            print(f"[DEBUG COMET] Chrome-style Stderr: {result.stderr.strip()}")
+            
+            if result.returncode == 0 and result.stdout.strip():
+                parts = result.stdout.strip().split('|SPLIT|')
+                print(f"[DEBUG COMET] Chrome-style Parts: {parts}")
+                if len(parts) == 2:
+                    print(f"[DEBUG COMET] SUCCESS - URL: {parts[0]}, Title: {parts[1]}")
+                    return parts[0], parts[1]
+            else:
+                print(f"[DEBUG COMET] Chrome-style FAILED")
+        except Exception as e:
+            print(f"[DEBUG COMET] Chrome-style Exception: {e}")
+        
+        # If Chrome-style fails, try the original syntax
+        script2 = '''
+        tell application "Comet"
+            if (count of windows) > 0 then
+                tell front window
+                    set currentURL to URL of current tab
+                    set currentTitle to name of current tab
+                    return currentURL & "|SPLIT|" & currentTitle
+                end tell
+            end if
+        end tell
+        '''
+        
+        try:
+            result2 = subprocess.run(
+                ['osascript', '-e', script2],
+                capture_output=True,
+                text=True,
+                timeout=2
+            )
+            
+            print(f"[DEBUG COMET] Original Return code: {result2.returncode}")
+            print(f"[DEBUG COMET] Original Stdout: {result2.stdout.strip()}")
+            print(f"[DEBUG COMET] Original Stderr: {result2.stderr.strip()}")
+            
+            if result2.returncode == 0 and result2.stdout.strip():
+                parts2 = result2.stdout.strip().split('|SPLIT|')
+                print(f"[DEBUG COMET] Original Parts: {parts2}")
+                if len(parts2) == 2:
+                    print(f"[DEBUG COMET] Original SUCCESS - URL: {parts2[0]}, Title: {parts2[1]}")
+                    return parts2[0], parts2[1]
+            else:
+                print(f"[DEBUG COMET] Original FAILED")
+        except Exception as e:
+            print(f"[DEBUG COMET] Original Exception: {e}")
+        
+        print(f"[DEBUG COMET] Returning None, None")
         return None, None
     
     def get_safari_url(self):
@@ -124,18 +242,26 @@ class BrowserTracker:
         """
         url, page_title = None, None
         
+        print(f"[DEBUG BROWSER] Getting activity for: {app_name}")
+        
         if app_name == "Google Chrome":
             url, page_title = self.get_chrome_url()
         elif app_name == "Safari":
             url, page_title = self.get_safari_url()
         elif app_name == "Firefox":
             url, page_title = self.get_firefox_url()
+        elif app_name == "Arc":
+            url, page_title = self.get_arc_url()
+        elif app_name == "Comet":
+            url, page_title = self.get_comet_url()
         
-        return {
+        result = {
             'url': url,
             'page_title': page_title,
             'domain': self.extract_domain(url) if url else None
         }
+        print(f"[DEBUG BROWSER] Result: {result}")
+        return result
     
     def extract_domain(self, url):
         """
@@ -174,7 +300,7 @@ class BrowserTracker:
         
         # Check if domain matches any study sites
         for study_domain in study_domains:
-            if study_domain in domain:
+            if study_domain in domain or study_domain in url:
                 return 'study'
         
         # Check if domain matches any procrastination sites
@@ -188,7 +314,7 @@ class BrowserTracker:
 # Test function
 if __name__ == "__main__":
     print("🌐 Testing Browser Tracker...")
-    print("Make sure Chrome or Safari is open with an active tab!\n")
+    print("Make sure a browser is open with an active tab!\n")
     
     import time
     from sys import path
@@ -198,7 +324,7 @@ if __name__ == "__main__":
     
     tracker = BrowserTracker()
     
-    for browser in ['Google Chrome', 'Safari']:
+    for browser in ['Google Chrome', 'Safari', 'Arc', 'Comet']:
         print(f"Testing {browser}...")
         if tracker.is_browser(browser):
             activity = tracker.get_browser_activity(browser)

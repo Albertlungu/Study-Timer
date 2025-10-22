@@ -34,6 +34,8 @@ class StudyTimer:
         self.session_start = None
         self.last_activity_time = None  # Track when we last saw activity
         self.session_break_threshold = 900  # 15 minutes in seconds
+        self.current_session_is_study = False
+        self.current_session_is_procrastination = False
         self.setup_logging()
         self.logger.info("Study Timer initialized!")
     
@@ -54,20 +56,26 @@ class StudyTimer:
         """Check if activity is study-related"""
         # Check if it's a procrastination app first
         if app_name in PROCRASTINATION_APPS:
+            self.logger.debug(f"[CLASSIFY] {app_name} is PROCRASTINATION_APP")
             return (False, True)
         
         # Then check if it's a study app
         if app_name in STUDY_APPS:
+            self.logger.debug(f"[CLASSIFY] {app_name} is STUDY_APP")
             if self.browser_tracker.is_browser(app_name) and url:
+                self.logger.debug(f"[CLASSIFY] {app_name} is a browser, checking URL: {url}")
                 category = self.browser_tracker.categorize_website(
                     url, STUDY_WEBSITES, PROCRASTINATION_WEBSITES
                 )
+                self.logger.debug(f"[CLASSIFY] URL category: {category}")
                 if category == 'study':
                     return (True, False)
                 elif category == 'procrastination':
                     return (False, True)
                 return (False, False)
+            self.logger.debug(f"[CLASSIFY] {app_name} is study app (non-browser)")
             return (True, False)
+        self.logger.debug(f"[CLASSIFY] {app_name} is NOT tracked")
         return (False, False)
     
     def should_start_new_session(self):
@@ -119,6 +127,8 @@ class StudyTimer:
             self.conn.commit()
             self.current_session = self.cursor.lastrowid
             self.session_start = activity_data['timestamp']
+            self.current_session_is_study = is_study
+            self.current_session_is_procrastination = is_procrastination
             
             status = "STUDYING" if is_study else "PROCRASTINATING" if is_procrastination else "WORKING"
             self.logger.info(f"New session: {status} - {activity_data['app_name']}")
@@ -134,18 +144,28 @@ class StudyTimer:
             return
         
         try:
-            # Just update the end time - we'll calculate duration when we actually end
+            # Update the session with new app/window/URL info and end time
+            # This allows tracking app switches within the same session
             self.cursor.execute("""
                 UPDATE sessions 
                 SET end_time = ?,
-                    duration = ?
+                    duration = ?,
+                    app_name = ?,
+                    window_title = ?,
+                    file_path = ?,
+                    website_url = ?
                 WHERE id = ?
             """, (
                 activity_data['timestamp'],
                 int((activity_data['timestamp'] - self.session_start).total_seconds()),
+                activity_data['app_name'],
+                activity_data.get('window_title'),
+                activity_data.get('file_path'),
+                activity_data.get('url'),
                 self.current_session
             ))
             self.conn.commit()
+            self.logger.debug(f"[SESSION UPDATE] Session {self.current_session}: {activity_data['app_name']} | URL: {activity_data.get('url', 'N/A')}")
         except Exception as e:
             self.logger.error(f"Error updating session: {e}")
     
@@ -244,6 +264,9 @@ class StudyTimer:
                     'url': url
                 }
                 
+                # DEBUG: Log all activity detection
+                self.logger.debug(f"[ACTIVITY] App: {app_name} | URL: {url} | Study: {is_study} | Procrastination: {is_procrastination}")
+                
                 # Log activity
                 self.log_activity(activity_data)
                 
@@ -251,17 +274,27 @@ class StudyTimer:
                 if is_study or is_procrastination:
                     if not self.current_session:
                         # No current session, start a new one
+                        self.logger.debug(f"[SESSION] No active session, starting new one")
                         self.start_new_session(activity_data, is_study, is_procrastination)
                     elif self.should_start_new_session():
                         # Been inactive for 15+ minutes, start new session
                         self.logger.info("15+ minute break detected, starting new session")
                         self.end_current_session(self.last_activity_time)
                         self.start_new_session(activity_data, is_study, is_procrastination)
+                    elif (is_study != self.current_session_is_study or 
+                          is_procrastination != self.current_session_is_procrastination):
+                        # Activity type changed (study -> procrastination or vice versa), start new session
+                        self.logger.info(f"Activity type changed (study={is_study}, procrastination={is_procrastination}), starting new session")
+                        self.end_current_session(self.last_activity_time)
+                        self.start_new_session(activity_data, is_study, is_procrastination)
                     else:
                         # Continue current session (just update duration)
+                        # This allows the session to continue across app switches
+                        self.logger.debug(f"[SESSION] Continuing session {self.current_session} with app switch: {app_name}")
                         self.update_session(activity_data)
                 else:
                     # Not a tracked activity - if we have a session, keep it but don't update
+                    self.logger.debug(f"[ACTIVITY] Not tracked: {app_name}")
                     pass
                 
                 # Update daily stats every 10 iterations

@@ -40,6 +40,7 @@ STUDY_APPS = [
     "Xcode",
     "Terminal",
     "iTerm",
+    "iTerm2",  # iTerm2 specifically
     "Notion",
     "Bear",
     "Evernote",
