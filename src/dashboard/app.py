@@ -1,8 +1,6 @@
 """
-Flask Dashboard Application
-
-A beautiful web interface to view your study statistics.
-Because staring at raw database queries is not fun.
+Flask Dashboard Application - UPDATED
+With project name tracking and improved time formatting
 """
 
 from flask import Flask, render_template, jsonify, request
@@ -29,15 +27,23 @@ def get_db_connection():
 
 
 def format_duration(seconds):
-    """Format seconds into human readable duration"""
-    if not seconds:
+    """
+    ✅ FIXED: Format seconds into hours and minutes, NOT just minutes
+    Examples:
+    - 3665 seconds = 1h 1m
+    - 125 seconds = 2m
+    - 7325 seconds = 2h 2m
+    """
+    if not seconds or seconds < 60:
         return "0m"
     
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
     
     if hours > 0:
-        return f"{hours}h {minutes}m"
+        if minutes > 0:
+            return f"{hours}h {minutes}m"
+        return f"{hours}h"
     return f"{minutes}m"
 
 
@@ -66,7 +72,6 @@ def api_reset():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Delete all data from tables
         cursor.execute("DELETE FROM sessions")
         cursor.execute("DELETE FROM activity_log")
         cursor.execute("DELETE FROM daily_stats")
@@ -87,7 +92,6 @@ def api_today():
     
     today = date.today()
     
-    # Get today's stats
     cursor.execute("""
         SELECT * FROM daily_stats WHERE date = ?
     """, (today,))
@@ -125,7 +129,6 @@ def api_week():
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Get last 7 days
     today = date.today()
     week_ago = today - timedelta(days=6)
     
@@ -138,7 +141,6 @@ def api_week():
     
     rows = cursor.fetchall()
     
-    # Create data for all 7 days (fill in missing days with 0)
     data = []
     current_date = week_ago
     
@@ -146,7 +148,6 @@ def api_week():
         date_str = current_date.strftime('%Y-%m-%d')
         day_name = current_date.strftime('%a')
         
-        # Find matching row
         matching_row = next((row for row in rows if row['date'] == date_str), None)
         
         if matching_row:
@@ -330,7 +331,7 @@ def api_files():
 
 @app.route('/api/recent_sessions')
 def api_recent_sessions():
-    """Get recent study sessions"""
+    """✅ UPDATED: Get recent study sessions WITH project names"""
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -340,6 +341,7 @@ def api_recent_sessions():
             window_title,
             file_path,
             website_url,
+            project_name,
             start_time,
             end_time,
             duration,
@@ -363,12 +365,53 @@ def api_recent_sessions():
             'file_path': row['file_path'],
             'website_url': row['website_url'],
             'website_domain': domain,
+            'project_name': row['project_name'],  # ✅ NEW!
             'start_time': row['start_time'],
             'end_time': row['end_time'],
             'duration': row['duration'],
             'duration_formatted': format_duration(row['duration']),
             'is_study': row['is_study'],
             'is_procrastination': row['is_procrastination']
+        })
+    
+    conn.close()
+    return jsonify(data)
+
+
+@app.route('/api/projects')
+def api_projects():
+    """✅ NEW: Get project time breakdown"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    today = date.today()
+    week_ago = today - timedelta(days=6)
+    
+    cursor.execute("""
+        SELECT 
+            project_name,
+            SUM(duration) as total_duration,
+            COUNT(*) as session_count,
+            MAX(start_time) as last_worked
+        FROM sessions
+        WHERE DATE(start_time) BETWEEN ? AND ? 
+        AND project_name IS NOT NULL
+        AND is_study = 1
+        GROUP BY project_name
+        ORDER BY total_duration DESC
+        LIMIT 20
+    """, (week_ago, today))
+    
+    rows = cursor.fetchall()
+    
+    data = []
+    for row in rows:
+        data.append({
+            'project_name': row['project_name'],
+            'duration': row['total_duration'],
+            'duration_formatted': format_duration(row['total_duration']),
+            'session_count': row['session_count'],
+            'last_worked': row['last_worked']
         })
     
     conn.close()
@@ -382,32 +425,29 @@ def api_export():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Get all sessions
         cursor.execute("""
-            SELECT app_name, window_title, file_path, website_url, start_time, end_time, duration, is_study, is_procrastination
+            SELECT app_name, window_title, file_path, website_url, project_name, start_time, end_time, duration, is_study, is_procrastination
             FROM sessions
             ORDER BY start_time DESC
         """)
 
         sessions = cursor.fetchall()
 
-        # Create CSV content
         import csv
         import io
 
         output = io.StringIO()
         writer = csv.writer(output)
 
-        # Write header
-        writer.writerow(['App Name', 'Window Title', 'File Path', 'Website URL', 'Start Time', 'End Time', 'Duration (seconds)', 'Is Study', 'Is Procrastination'])
+        writer.writerow(['App Name', 'Window Title', 'File Path', 'Website URL', 'Project Name', 'Start Time', 'End Time', 'Duration (seconds)', 'Is Study', 'Is Procrastination'])
 
-        # Write data
         for session in sessions:
             writer.writerow([
                 session['app_name'] or '',
                 session['window_title'] or '',
                 session['file_path'] or '',
                 session['website_url'] or '',
+                session['project_name'] or '',
                 session['start_time'] or '',
                 session['end_time'] or '',
                 session['duration'] or 0,
@@ -417,7 +457,6 @@ def api_export():
 
         conn.close()
 
-        # Return CSV file
         from flask import Response
         output.seek(0)
         return Response(
@@ -446,10 +485,13 @@ def find_free_port(start_port=5000):
 def main():
     """Run the dashboard"""
     print("=" * 60)
-    print("STUDYTIME DASHBOARD")
+    print("STUDYTIME DASHBOARD v2.1")
     print("=" * 60)
+    print("\n✅ NEW FEATURES:")
+    print("   • Project name tracking")
+    print("   • Hours:Minutes time format")
+    print("   • Improved pie chart colors")
     
-    # Check if port is available, if not find a free one
     port = find_free_port(DASHBOARD_PORT)
     
     if port != DASHBOARD_PORT:
@@ -458,14 +500,8 @@ def main():
     print(f"\nDashboard starting...")
     print(f"   Access at: http://localhost:{port}")
     print(f"   Or:        http://127.0.0.1:{port}")
-    print("View your study stats in real-time!")
-    print("\nTip: Keep the tracker running (main.py) to collect data")
-    print("\nIf you get a 403 error:")
-    print("   1. Run: chmod +x kill_dashboard.sh && ./kill_dashboard.sh")
-    print("   2. Try again")
     print("\nPress Ctrl+C to stop the dashboard\n")
     
-    # Run with proper settings
     app.run(host='127.0.0.1', port=port, debug=False, use_reloader=False, threaded=True)
 
 

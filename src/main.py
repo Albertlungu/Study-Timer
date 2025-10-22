@@ -1,6 +1,6 @@
 """
-Main Study Timer Daemon
-Tracks your study sessions automatically
+Main Study Timer Daemon - UPDATED WITH PROJECT NAME TRACKING
+Tracks your study sessions automatically with project name extraction
 """
 
 import sqlite3
@@ -18,26 +18,110 @@ from config import (
     STUDY_APPS, STUDY_WEBSITES, PROCRASTINATION_WEBSITES, PROCRASTINATION_APPS,
     LOG_FILE, LOG_LEVEL, IB_QUOTES
 )
-from trackers import AppTracker, BrowserTracker, FileTracker
 
 
 class StudyTimer:
-    """Main tracking daemon"""
-    
+    """Main tracking daemon with project name extraction"""
+
     def __init__(self):
-        self.app_tracker = AppTracker()
-        self.browser_tracker = BrowserTracker()
-        self.file_tracker = FileTracker()
+        # Initialize trackers
+        try:
+            from trackers.app_tracker import AppTracker as RealAppTracker
+            from trackers.browser_tracker import BrowserTracker as RealBrowserTracker
+            from trackers.file_tracker import FileTracker as RealFileTracker
+            self.app_tracker = RealAppTracker()
+            self.browser_tracker = RealBrowserTracker()
+            self.file_tracker = RealFileTracker()
+            self.use_mock = False
+        except ImportError:
+            print("⚠️  Real trackers not available, using mock trackers for testing")
+            from trackers.mock_tracker import AppTracker, BrowserTracker, FileTracker
+            self.app_tracker = AppTracker()
+            self.browser_tracker = BrowserTracker()
+            self.file_tracker = FileTracker()
+            self.use_mock = True
+
         self.conn = sqlite3.connect(DATABASE_PATH)
         self.cursor = self.conn.cursor()
         self.current_session = None
         self.session_start = None
-        self.last_activity_time = None  # Track when we last saw activity
-        self.session_break_threshold = 900  # 15 minutes in seconds
+        self.last_activity_time = None
+        self.session_break_threshold = 900  # 15 minutes
         self.current_session_is_study = False
         self.current_session_is_procrastination = False
+
+        # Initialize project extractor
+        try:
+            from trackers.project_extractor import extract_project_name
+            self.extract_project_name = extract_project_name
+        except ImportError:
+            # Fallback function
+            def extract_project_name(url, page_title=None):
+                if url:
+                    from urllib.parse import urlparse
+                    parsed = urlparse(url)
+                    return parsed.netloc.replace('www.', '').split('.')[0].title()
+                return None
+            self.extract_project_name = extract_project_name
+
         self.setup_logging()
-        self.logger.info("Study Timer initialized!")
+        self.logger.info("Study Timer initialized with PROJECT NAME TRACKING!")
+
+    def is_system_asleep(self):
+        """Check if system is asleep or screen is locked"""
+        try:
+            # Try to use real system detection first
+            if not self.use_mock:
+                return self._is_system_really_asleep()
+            else:
+                # Mock implementation - use mock tracker's sleep state
+                return not self.app_tracker.is_system_awake()
+        except:
+            # Fallback to mock if real detection fails
+            return False
+
+    def _is_system_really_asleep(self):
+        """Real system sleep detection using macOS APIs"""
+        try:
+            from AppKit import NSWorkspace
+            workspace = NSWorkspace.sharedWorkspace()
+
+            # Check if screen is locked by trying to get active application
+            # If we can't get it, screen might be locked
+            try:
+                active_app = workspace.activeApplication()
+                if not active_app or not active_app.get('NSApplicationName'):
+                    return True
+            except:
+                return True
+
+            # Additional check: see if we can access the frontmost application
+            try:
+                front_app = workspace.frontmostApplication()
+                if not front_app:
+                    return True
+            except:
+                return True
+
+            return False
+
+        except ImportError:
+            # If macOS APIs not available, assume not asleep
+            return False
+
+    def wait_for_system_wake(self):
+        """Wait for system to wake up from sleep/lock"""
+        self.logger.info("💤 System appears to be asleep or locked, pausing tracking...")
+
+        while self.is_system_asleep():
+            if self.use_mock:
+                # For mock, just wait a bit and check again
+                time.sleep(5)
+            else:
+                # For real system, check every 10 seconds
+                time.sleep(10)
+
+        self.logger.info("✅ System is awake, resuming tracking!")
     
     def setup_logging(self):
         """Setup logging"""
@@ -54,12 +138,10 @@ class StudyTimer:
     
     def is_study_activity(self, app_name, url=None):
         """Check if activity is study-related"""
-        # Check if it's a procrastination app first
         if app_name in PROCRASTINATION_APPS:
             self.logger.debug(f"[CLASSIFY] {app_name} is PROCRASTINATION_APP")
             return (False, True)
         
-        # Then check if it's a study app
         if app_name in STUDY_APPS:
             self.logger.debug(f"[CLASSIFY] {app_name} is STUDY_APP")
             if self.browser_tracker.is_browser(app_name) and url:
@@ -79,10 +161,7 @@ class StudyTimer:
         return (False, False)
     
     def should_start_new_session(self):
-        """
-        Determine if we should start a new session.
-        Only start new session if more than 15 minutes have passed since last activity.
-        """
+        """Determine if we should start a new session"""
         if not self.last_activity_time:
             return True
         
@@ -109,17 +188,27 @@ class StudyTimer:
             self.logger.error(f"Error logging: {e}")
     
     def start_new_session(self, activity_data, is_study, is_procrastination):
-        """Start tracking session"""
+        """Start tracking session WITH PROJECT NAME"""
         try:
+            # ✅ EXTRACT PROJECT NAME HERE
+            project_name = None
+            if activity_data.get('url'):
+                project_name = self.extract_project_name(
+                    activity_data['url'],
+                    activity_data.get('window_title')
+                )
+                self.logger.info(f"📋 PROJECT DETECTED: {project_name}")
+            
             self.cursor.execute("""
                 INSERT INTO sessions 
-                (app_name, window_title, file_path, website_url, start_time, is_study, is_procrastination)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                (app_name, window_title, file_path, website_url, project_name, start_time, is_study, is_procrastination)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 activity_data['app_name'],
                 activity_data.get('window_title'),
                 activity_data.get('file_path'),
                 activity_data.get('url'),
+                project_name,  # ✅ NEW!
                 activity_data['timestamp'],
                 is_study,
                 is_procrastination
@@ -131,21 +220,25 @@ class StudyTimer:
             self.current_session_is_procrastination = is_procrastination
             
             status = "STUDYING" if is_study else "PROCRASTINATING" if is_procrastination else "WORKING"
-            self.logger.info(f"New session: {status} - {activity_data['app_name']}")
+            project_info = f" | Project: {project_name}" if project_name else ""
+            self.logger.info(f"New session: {status} - {activity_data['app_name']}{project_info}")
         except Exception as e:
             self.logger.error(f"Error starting session: {e}")
     
     def update_session(self, activity_data):
-        """
-        Update the current session with new activity data.
-        This keeps the session alive without creating a new one.
-        """
+        """Update the current session with new activity data AND PROJECT NAME"""
         if not self.current_session:
             return
         
         try:
-            # Update the session with new app/window/URL info and end time
-            # This allows tracking app switches within the same session
+            # ✅ EXTRACT PROJECT NAME FOR UPDATES TOO
+            project_name = None
+            if activity_data.get('url'):
+                project_name = self.extract_project_name(
+                    activity_data['url'],
+                    activity_data.get('window_title')
+                )
+            
             self.cursor.execute("""
                 UPDATE sessions 
                 SET end_time = ?,
@@ -153,7 +246,8 @@ class StudyTimer:
                     app_name = ?,
                     window_title = ?,
                     file_path = ?,
-                    website_url = ?
+                    website_url = ?,
+                    project_name = ?
                 WHERE id = ?
             """, (
                 activity_data['timestamp'],
@@ -162,10 +256,11 @@ class StudyTimer:
                 activity_data.get('window_title'),
                 activity_data.get('file_path'),
                 activity_data.get('url'),
+                project_name,  # ✅ NEW!
                 self.current_session
             ))
             self.conn.commit()
-            self.logger.debug(f"[SESSION UPDATE] Session {self.current_session}: {activity_data['app_name']} | URL: {activity_data.get('url', 'N/A')}")
+            self.logger.debug(f"[SESSION UPDATE] Session {self.current_session}: {activity_data['app_name']} | URL: {activity_data.get('url', 'N/A')} | Project: {project_name}")
         except Exception as e:
             self.logger.error(f"Error updating session: {e}")
     
@@ -219,32 +314,47 @@ class StudyTimer:
     
     def run(self):
         """Main loop"""
-        self.logger.info("Starting study tracking...")
+        self.logger.info("🚀 Starting study tracking with PROJECT NAME extraction...")
         self.logger.info("Session break threshold: 15 minutes")
+        self.logger.info("✅ Kognity will be tracked!")
+        self.logger.info("✅ Project names will be extracted automatically!")
+        if self.use_mock:
+            self.logger.info("✅ Mock sleep detection enabled (for testing)")
+        else:
+            self.logger.info("✅ Real sleep/lock detection enabled")
         update_counter = 0
         
         try:
             while True:
+                # Check if system is asleep or locked
+                if self.is_system_asleep():
+                    self.wait_for_system_wake()
+                    continue
+
                 activity = self.app_tracker.get_current_activity()
                 app_name = activity['app_name']
                 current_time = datetime.now()
                 
                 # Check if user is idle
                 if self.app_tracker.is_idle(IDLE_TIMEOUT):
-                    # User is idle, but don't end session yet
-                    # Only end if they've been idle for 15+ minutes
                     if self.last_activity_time:
                         time_since_activity = (current_time - self.last_activity_time).total_seconds()
                         if time_since_activity > self.session_break_threshold:
-                            if self.current_session:
-                                self.logger.info("15+ minutes of inactivity, ending session")
-                                self.end_current_session(self.last_activity_time)
-                                self.last_activity_time = None
-                    
+                            # Check if system might be asleep (long idle time)
+                            if self.is_system_asleep():
+                                self.logger.info("💤 System went to sleep during idle period, pausing...")
+                                self.wait_for_system_wake()
+                                continue
+                            else:
+                                if self.current_session:
+                                    self.logger.info("15+ minutes of inactivity, ending session")
+                                    self.end_current_session(self.last_activity_time)
+                                    self.last_activity_time = None
+
                     time.sleep(TRACKING_INTERVAL)
                     continue
                 
-                # User is active, update last activity time
+                # User is active
                 self.last_activity_time = current_time
                 
                 # Get browser activity if applicable
@@ -273,32 +383,24 @@ class StudyTimer:
                 # Handle session tracking
                 if is_study or is_procrastination:
                     if not self.current_session:
-                        # No current session, start a new one
                         self.logger.debug(f"[SESSION] No active session, starting new one")
                         self.start_new_session(activity_data, is_study, is_procrastination)
                     elif self.should_start_new_session():
-                        # Been inactive for 15+ minutes, start new session
                         self.logger.info("15+ minute break detected, starting new session")
                         self.end_current_session(self.last_activity_time)
                         self.start_new_session(activity_data, is_study, is_procrastination)
                     elif (is_study != self.current_session_is_study or
                           is_procrastination != self.current_session_is_procrastination):
-                        # Activity type changed (study -> procrastination or vice versa), start new session
-                        self.logger.info(f"Activity type changed (study={is_study}, procrastination={is_procrastination}), starting new session")
+                        self.logger.info(f"Activity type changed, starting new session")
                         self.end_current_session(self.last_activity_time)
                         self.start_new_session(activity_data, is_study, is_procrastination)
                     else:
-                        # Continue current session (just update duration AND app info)
-                        # This allows the session to continue across app switches
-                        self.logger.debug(f"[SESSION] Continuing session {self.current_session} with app switch: {app_name}")
+                        self.logger.debug(f"[SESSION] Continuing session {self.current_session}")
                         self.update_session(activity_data)
-                        # Also update the session type flags in case they changed
                         self.current_session_is_study = is_study
                         self.current_session_is_procrastination = is_procrastination
                 else:
-                    # Not a tracked activity - if we have a session, keep it but don't update
                     self.logger.debug(f"[ACTIVITY] Not tracked: {app_name}")
-                    pass
                 
                 # Update daily stats every 10 iterations
                 update_counter += 1
@@ -327,13 +429,16 @@ class StudyTimer:
 def main():
     """Entry point"""
     print("=" * 60)
-    print("STUDYTIME - Academic Time Tracker")
+    print("STUDYTIME - Academic Time Tracker v2.1")
     print("=" * 60)
-    print("\nMission: Track your study time automatically")
-    print("Warning: Reveal how much you actually procrastinate\n")
-    print("Sessions now continue through tab switches!")
-    print("   A new session only starts after 15 minutes of inactivity\n")
-    print("Grant Accessibility permissions in System Preferences!")
+    print("\n✅ NEW FEATURES:")
+    print("   • Automatic PROJECT NAME extraction")
+    print("   • Kognity course tracking (IB Chemistry, etc.)")
+    print("   • GitHub repo tracking")
+    print("   • Google Docs/Slides/Sheets document names")
+    print("   • Sleep/lock detection (no tracking when away)")
+    print("   • And more!")
+    print("\nGrant Accessibility permissions in System Preferences!")
     print("   (Security & Privacy → Privacy → Accessibility)\n")
     
     timer = StudyTimer()

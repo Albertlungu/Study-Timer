@@ -34,6 +34,7 @@ def init_database():
             window_title TEXT,
             file_path TEXT,
             website_url TEXT,
+            project_name TEXT,
             start_time TIMESTAMP NOT NULL,
             end_time TIMESTAMP,
             duration INTEGER DEFAULT 0,

@@ -43,10 +43,6 @@ STUDY_APPS = [
     "iTerm2",  # iTerm2 specifically
     "Notion",
     "Bear",
-    "Claude",
-    "ChatGPT",
-    "Ollama",
-    "OpenAI",
     "Evernote",
     "GoodNotes",
     "Notability",
@@ -71,10 +67,10 @@ STUDY_WEBSITES = [
     "canvas.instructure.com",
     "moodle",
     "blackboard",
-    # IB specific
+    # IB specific - KOGNITY ADDED HERE!
     "ibdocuments.com",
-    "app.kognity.com",
-    "kognity.com",
+    "app.kognity.com",  # ✅ Already here!
+    "kognity.com",       # ✅ Already here!
     "ibo.org",
     "managebac.com",
 ]
