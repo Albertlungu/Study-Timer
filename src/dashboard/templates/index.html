@@ -412,24 +412,6 @@
                         Dashboard
                     </a>
                 </li>
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
-                        <span class="sidebar-icon">📈</span>
-                        Activity
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
-                        <span class="sidebar-icon">📋</span>
-                        Projects
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
-                        <span class="sidebar-icon">⚙️</span>
-                        Settings
-                    </a>
-                </li>
             </ul>
         </nav>
 
@@ -556,353 +538,65 @@
             if (!data) return;
 
             document.getElementById('currentStreak').textContent = data.current_streak;
+
+            // Update user stats in header
+            const userStats = document.querySelector('.user-stats');
+            userStats.textContent = `Today: ${data.total_study_time_formatted} • This week: ${data.total_study_time_formatted}`;
+        }
+        async function fetchData(endpoint) {
+            try {
+                const response = await fetch(endpoint);
+                return await response.json();
+            } catch (error) {
+                console.error(`Error fetching ${endpoint}:`, error);
+                return null;
+            }
         }
 
-        async function updateAppList() {
-            const data = await fetchData('/api/apps');
-            const appList = document.getElementById('appList');
-
-            if (!data || data.length === 0) {
-                appList.innerHTML = '<li class="loading">Start studying to see your app usage!</li>';
+        async function resetAllData() {
+            if (!confirm('Are you sure you want to delete ALL your study data? This cannot be undone!')) {
                 return;
             }
-
-            appList.innerHTML = data.map(app => `
-                <li class="list-item">
-                    <div>
-                        <div class="item-name">${app.app_name}</div>
-                    </div>
-                    <span class="item-time">${app.duration_formatted}</span>
-                </li>
-            `).join('');
-        }
-
-        async function updateFileList() {
-            const data = await fetchData('/api/files');
-            const fileList = document.getElementById('fileList');
-
-            if (!data || data.length === 0) {
-                fileList.innerHTML = '<li class="loading">Open some documents to track your work!</li>';
-                return;
-            }
-
-            fileList.innerHTML = data.slice(0, 8).map(file => `
-                <li class="list-item">
-                    <div>
-                        <div class="item-name">${file.file_path}</div>
-                        <div class="item-meta">${file.app_name}</div>
-                    </div>
-                    <span class="item-time">${file.duration_formatted}</span>
-                </li>
-            `).join('');
-        }
-
-        async function updateStudyWebsites() {
-            const data = await fetchData('/api/websites/study');
-            const list = document.getElementById('studyWebsiteList');
-
-            if (!data || data.length === 0) {
-                list.innerHTML = '<li class="loading">No study websites tracked yet</li>';
-                return;
-            }
-
-            list.innerHTML = data.map(site => `
-                <li class="list-item">
-                    <div>
-                        <div class="item-name">${site.domain}</div>
-                        <div class="item-meta">${site.visit_count} visits</div>
-                    </div>
-                    <span class="item-time">${site.duration_formatted}</span>
-                </li>
-            `).join('');
-        }
-
-        async function updateProcrastinationWebsites() {
-            const data = await fetchData('/api/websites/procrastination');
-            const list = document.getElementById('procrastinationWebsiteList');
-
-            if (!data || data.length === 0) {
-                list.innerHTML = '<li class="loading">Clean record so far!</li>';
-                return;
-            }
-
-            list.innerHTML = data.map(site => `
-                <li class="list-item">
-                    <div>
-                        <div class="item-name">${site.domain}</div>
-                        <div class="item-meta">${site.visit_count} visits</div>
-                    </div>
-                    <span class="item-time">${site.duration_formatted}</span>
-                </li>
-            `).join('');
-        }
-
-        async function updateCharts() {
-            await Promise.all([
-                updateAppsChart(),
-                updateWebsitesChart(),
-                updateWebsiteTimeChart(),
-                updateProjectsChart()
-            ]);
-        }
-
-        function createPieChart(canvasId, data, title) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) return null;
-
-            const chartContainer = ctx.parentElement;
-            chartContainer.innerHTML = '<div class="chart-loading">Loading chart...</div><canvas id="' + canvasId + '" width="400" height="300"></canvas>';
-
-            const newCtx = document.getElementById(canvasId);
-            if (!newCtx) return null;
-
-            return new Chart(newCtx, {
-                type: 'pie',
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#e6e9ea',
-                                font: {
-                                    family: 'SF Mono, Monaco, Inconsolata, Roboto Mono, monospace',
-                                    size: 12
-                                }
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: '#1a1a1f',
-                            titleColor: '#e6e9ea',
-                            bodyColor: '#e6e9ea',
-                            borderColor: '#2a2a2f',
-                            borderWidth: 1
-                        }
-                    }
-                }
-            });
-        }
-
-        function createBarChart(canvasId, data, title) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) return null;
-
-            const chartContainer = ctx.parentElement;
-            chartContainer.innerHTML = '<div class="chart-loading">Loading chart...</div><canvas id="' + canvasId + '" width="400" height="300"></canvas>';
-
-            const newCtx = document.getElementById(canvasId);
-            if (!newCtx) return null;
-
-            return new Chart(newCtx, {
-                type: 'bar',
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: '#9ca3af',
-                                font: {
-                                    family: 'SF Mono, Monaco, Inconsolata, Roboto Mono, monospace'
-                                }
-                            },
-                            grid: {
-                                color: '#2a2a2f'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#9ca3af',
-                                font: {
-                                    family: 'SF Mono, Monaco, Inconsolata, Roboto Mono, monospace'
-                                }
-                            },
-                            grid: {
-                                color: '#2a2a2f'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: '#1a1a1f',
-                            titleColor: '#e6e9ea',
-                            bodyColor: '#e6e9ea',
-                            borderColor: '#2a2a2f',
-                            borderWidth: 1
-                        }
-                    }
-                }
-            });
-        }
-
-        async function updateAppsChart() {
-            const data = await fetchData('/api/apps');
-            const container = document.querySelector('#appsChart').parentElement;
-
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="chart-loading">No app data available</div>';
-                return;
-            }
-
-            const labels = data.map(app => app.app_name);
-            const durations = data.map(app => app.duration);
-
-            const chartData = {
-                labels: labels,
-                datasets: [{
-                    data: durations,
-                    backgroundColor: [
-                        '#ED3750', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
-                        '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce'
-                    ],
-                    borderWidth: 0
-                }]
-            };
-
-            createPieChart('appsChart', chartData, 'Study Apps');
-        }
-
-        async function updateWebsitesChart() {
-            const data = await fetchData('/api/websites/study');
-            const container = document.querySelector('#websitesChart').parentElement;
-
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="chart-loading">No website data available</div>';
-                return;
-            }
-
-            const labels = data.map(site => site.domain);
-            const durations = data.map(site => site.duration);
-
-            const chartData = {
-                labels: labels,
-                datasets: [{
-                    data: durations,
-                    backgroundColor: [
-                        '#ED3750', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
-                        '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce'
-                    ],
-                    borderWidth: 0
-                }]
-            };
-
-            createPieChart('websitesChart', chartData, 'Study Websites');
-        }
-
-        async function updateWebsiteTimeChart() {
-            const data = await fetchData('/api/websites/study');
-            const container = document.querySelector('#websiteTimeChart').parentElement;
-
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="chart-loading">No website time data available</div>';
-                return;
-            }
-
-            const labels = data.map(site => site.domain);
-            const durations = data.map(site => site.duration);
-
-            const chartData = {
-                labels: labels,
-                datasets: [{
-                    label: 'Time Spent (seconds)',
-                    data: durations,
-                    backgroundColor: '#ED3750',
-                    borderColor: '#ED3750',
-                    borderWidth: 1
-                }]
-            };
-
-            createBarChart('websiteTimeChart', chartData, 'Website Time Distribution');
-        }
-
-        function extractProjectName(url) {
-            if (!url) return 'Unknown Project';
 
             try {
-                const urlObj = new URL(url);
-                const domain = urlObj.hostname;
+                const response = await fetch('/api/reset', { method: 'POST' });
+                const result = await response.json();
 
-                // Extract project names from common patterns
-                if (domain.includes('github.com')) {
-                    const pathParts = urlObj.pathname.split('/').filter(p => p);
-                    if (pathParts.length >= 2) {
-                        return `${pathParts[0]}/${pathParts[1]}`;
-                    }
-                } else if (domain.includes('docs.google.com')) {
-                    if (url.includes('/document/')) {
-                        return 'Google Docs';
-                    } else if (url.includes('/presentation/')) {
-                        return 'Google Slides';
-                    } else if (url.includes('/spreadsheets/')) {
-                        return 'Google Sheets';
-                    }
-                } else if (domain.includes('notion.so')) {
-                    return 'Notion';
-                } else if (domain.includes('overleaf.com')) {
-                    return 'Overleaf';
+                if (result.success) {
+                    alert('All data has been reset! Dashboard will refresh.');
+                    location.reload();
+                } else {
+                    alert('Error resetting data: ' + result.message);
                 }
-
-                return domain;
-            } catch (e) {
-                return url.split('/')[0] || 'Unknown Project';
+            } catch (error) {
+                alert('Error resetting data: ' + error.message);
             }
         }
 
-        async function updateProjectsChart() {
-            const data = await fetchData('/api/recent_sessions');
-            const container = document.querySelector('#projectsChart').parentElement;
+        async function updateTodayStats() {
+            const data = await fetchData('/api/today');
+            if (!data) return;
 
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="chart-loading">No project data available</div>';
-                return;
-            }
+            document.getElementById('todayStudy').textContent = data.study_time_formatted;
+            document.getElementById('todayProcrastination').textContent = data.procrastination_time_formatted;
+            document.getElementById('todaySessions').textContent = data.total_sessions;
+        }
 
-            // Group sessions by project
-            const projectTimes = {};
-            data.forEach(session => {
-                if (session.website_url) {
-                    const project = extractProjectName(session.website_url);
-                    projectTimes[project] = (projectTimes[project] || 0) + session.duration;
-                }
-            });
+        async function updateSummaryStats() {
+            const data = await fetchData('/api/stats/summary');
+            if (!data) return;
 
-            const labels = Object.keys(projectTimes);
-            const durations = Object.values(projectTimes);
+            document.getElementById('currentStreak').textContent = data.current_streak;
 
-            if (labels.length === 0) {
-                container.innerHTML = '<div class="chart-loading">No project data available</div>';
-                return;
-            }
-
-            const chartData = {
-                labels: labels,
-                datasets: [{
-                    label: 'Time Spent (seconds)',
-                    data: durations,
-                    backgroundColor: '#ED3750',
-                    borderColor: '#ED3750',
-                    borderWidth: 1
-                }]
-            };
-
-            createBarChart('projectsChart', chartData, 'Project Time Tracking');
+            // Update user stats in header
+            const userStats = document.querySelector('.user-stats');
+            userStats.textContent = `Today: ${data.total_study_time_formatted} • This week: ${data.total_study_time_formatted}`;
         }
 
         async function refreshAll() {
             await Promise.all([
                 updateTodayStats(),
                 updateSummaryStats(),
-                updateAppList(),
-                updateFileList(),
-                updateStudyWebsites(),
-                updateProcrastinationWebsites(),
                 updateSessions(),
                 updateCharts()
             ]);

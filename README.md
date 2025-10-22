@@ -140,16 +140,30 @@ A: It only tracks when you're actively using study-related apps. Idle time is de
 **Q: Where is my data stored?**  
 A: Everything is stored locally in `data/study_data.db`. Nothing is sent to the cloud.
 
-## Dashboard Visualizations
+## Dashboard Design
 
-StudyTime includes interactive charts that help you understand your study patterns:
+StudyTime features a modern, Hackatime-inspired design:
 
-- **Study Apps Breakdown**: Pie chart showing which applications you use most for studying
-- **Study Websites Breakdown**: Pie chart of your most visited study websites
-- **Website Time Distribution**: Bar chart showing time spent on each website
-- **Project Time Tracking**: Bar chart analyzing which projects you spend the most time on
+- **🎨 Dark Theme**: Professional dark theme (#121217) with light text
+- **📱 Sidebar Navigation**: Fixed sidebar with minimalist icons and labels
+- **💎 Card-Based UI**: Clean cards with subtle shadows and hover effects
+- **🔥 Accent Colors**: Primary red (#ED3750) with professional gray palette
+- **⚡ Monospace Typography**: Techy, code-editor look with SF Mono font
+- **📊 Interactive Charts**: Pie charts and bar graphs with smooth animations
+- **📱 Responsive Layout**: Works perfectly on desktop, tablet, and mobile devices
+- **⚡ Real-Time Updates**: Live data refresh every 60 seconds
 
-The dashboard intelligently detects projects from URLs (GitHub repositories, Google Docs, Notion workspaces, etc.) and tracks time spent on each project across all your study sessions.
+### Dashboard Features
+
+- **Sidebar Navigation**: Dashboard, Activity, Projects, Settings
+- **User Profile Header**: Avatar, username, and daily/weekly summaries
+- **Stats Cards**: Study time, sessions, streak, and procrastination metrics
+- **Charts Grid**: 4 interactive visualizations
+  - Study Apps Breakdown (Pie Chart)
+  - Study Websites Breakdown (Pie Chart)
+  - Website Time Distribution (Bar Chart)
+  - Project Time Tracking (Bar Chart)
+- **Activity Timeline**: Recent sessions with hover effects
 
 ## Contributing
 
