@@ -533,16 +533,6 @@
             document.getElementById('todaySessions').textContent = data.total_sessions;
         }
 
-        async function updateSummaryStats() {
-            const data = await fetchData('/api/stats/summary');
-            if (!data) return;
-
-            document.getElementById('currentStreak').textContent = data.current_streak;
-
-            // Update user stats in header
-            const userStats = document.querySelector('.user-stats');
-            userStats.textContent = `Today: ${data.total_study_time_formatted} • This week: ${data.total_study_time_formatted}`;
-        }
         async function fetchData(endpoint) {
             try {
                 const response = await fetch(endpoint);
@@ -591,6 +581,348 @@
             // Update user stats in header
             const userStats = document.querySelector('.user-stats');
             userStats.textContent = `Today: ${data.total_study_time_formatted} • This week: ${data.total_study_time_formatted}`;
+        }
+
+        function createPieChart(canvasId, data, title) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return null;
+
+            const chartContainer = ctx.parentElement;
+
+            // Clear any existing loading state
+            const loadingDiv = chartContainer.querySelector('.chart-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            // Destroy existing chart if it exists
+            if (window[canvasId + 'Chart']) {
+                window[canvasId + 'Chart'].destroy();
+            }
+
+            // Store chart instance globally for cleanup
+            window[canvasId + 'Chart'] = new Chart(ctx, {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e6e9ea',
+                                font: {
+                                    family: 'SF Mono, Monaco, Inconsolata, Roboto Mono, monospace',
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1a1a1f',
+                            titleColor: '#e6e9ea',
+                            bodyColor: '#e6e9ea',
+                            borderColor: '#2a2a2f',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+
+            return window[canvasId + 'Chart'];
+        }
+
+        function createBarChart(canvasId, data, title) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return null;
+
+            const chartContainer = ctx.parentElement;
+
+            // Clear any existing loading state
+            const loadingDiv = chartContainer.querySelector('.chart-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            // Destroy existing chart if it exists
+            if (window[canvasId + 'Chart']) {
+                window[canvasId + 'Chart'].destroy();
+            }
+
+            // Store chart instance globally for cleanup
+            window[canvasId + 'Chart'] = new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: 'SF Mono, Monaco, Inconsolata, Roboto Mono, monospace'
+                                }
+                            },
+                            grid: {
+                                color: '#2a2a2f'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: 'SF Mono, Monaco, Inconsolata, Roboto Mono, monospace'
+                                }
+                            },
+                            grid: {
+                                color: '#2a2a2f'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#1a1a1f',
+                            titleColor: '#e6e9ea',
+                            bodyColor: '#e6e9ea',
+                            borderColor: '#2a2a2f',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+
+            return window[canvasId + 'Chart'];
+        }
+
+        async function updateAppsChart() {
+            const data = await fetchData('/api/apps');
+            const container = document.querySelector('#appsChart').parentElement;
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="chart-loading">No app data available</div>';
+                return;
+            }
+
+            // Remove loading state if it exists
+            const loadingDiv = container.querySelector('.chart-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            const labels = data.map(app => app.app_name);
+            const durations = data.map(app => app.duration);
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    data: durations,
+                    backgroundColor: [
+                        '#ED3750', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+                        '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce'
+                    ],
+                    borderWidth: 0
+                }]
+            };
+
+            createPieChart('appsChart', chartData, 'Study Apps');
+        }
+
+        async function updateWebsitesChart() {
+            const data = await fetchData('/api/websites/study');
+            const container = document.querySelector('#websitesChart').parentElement;
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="chart-loading">No website data available</div>';
+                return;
+            }
+
+            // Remove loading state if it exists
+            const loadingDiv = container.querySelector('.chart-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            const labels = data.map(site => site.domain);
+            const durations = data.map(site => site.duration);
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    data: durations,
+                    backgroundColor: [
+                        '#ED3750', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+                        '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce'
+                    ],
+                    borderWidth: 0
+                }]
+            };
+
+            createPieChart('websitesChart', chartData, 'Study Websites');
+        }
+
+        async function updateWebsiteTimeChart() {
+            const data = await fetchData('/api/websites/study');
+            const container = document.querySelector('#websiteTimeChart').parentElement;
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="chart-loading">No website time data available</div>';
+                return;
+            }
+
+            // Remove loading state if it exists
+            const loadingDiv = container.querySelector('.chart-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            const labels = data.map(site => site.domain);
+            const durations = data.map(site => site.duration);
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Time Spent (seconds)',
+                    data: durations,
+                    backgroundColor: '#ED3750',
+                    borderColor: '#ED3750',
+                    borderWidth: 1
+                }]
+            };
+
+            createBarChart('websiteTimeChart', chartData, 'Website Time Distribution');
+        }
+
+        function extractProjectName(url) {
+            if (!url) return 'Unknown Project';
+
+            try {
+                const urlObj = new URL(url);
+                const domain = urlObj.hostname;
+
+                if (domain.includes('github.com')) {
+                    const pathParts = urlObj.pathname.split('/').filter(p => p);
+                    if (pathParts.length >= 2) {
+                        return `${pathParts[0]}/${pathParts[1]}`;
+                    }
+                } else if (domain.includes('docs.google.com')) {
+                    if (url.includes('/document/')) {
+                        return 'Google Docs';
+                    } else if (url.includes('/presentation/')) {
+                        return 'Google Slides';
+                    } else if (url.includes('/spreadsheets/')) {
+                        return 'Google Sheets';
+                    }
+                } else if (domain.includes('notion.so')) {
+                    return 'Notion';
+                } else if (domain.includes('overleaf.com')) {
+                    return 'Overleaf';
+                }
+
+                return domain;
+            } catch (e) {
+                return url.split('/')[0] || 'Unknown Project';
+            }
+        }
+
+        async function updateProjectsChart() {
+            const data = await fetchData('/api/recent_sessions');
+            const container = document.querySelector('#projectsChart').parentElement;
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="chart-loading">No project data available</div>';
+                return;
+            }
+
+            // Remove loading state if it exists
+            const loadingDiv = container.querySelector('.chart-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            // Group sessions by project
+            const projectTimes = {};
+            data.forEach(session => {
+                if (session.website_url) {
+                    const project = extractProjectName(session.website_url);
+                    projectTimes[project] = (projectTimes[project] || 0) + session.duration;
+                }
+            });
+
+            const labels = Object.keys(projectTimes);
+            const durations = Object.values(projectTimes);
+
+            if (labels.length === 0) {
+                container.innerHTML = '<div class="chart-loading">No project data available</div>';
+                return;
+            }
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Time Spent (seconds)',
+                    data: durations,
+                    backgroundColor: '#ED3750',
+                    borderColor: '#ED3750',
+                    borderWidth: 1
+                }]
+            };
+
+            createBarChart('projectsChart', chartData, 'Project Time Tracking');
+        }
+
+        async function updateSessions() {
+            const data = await fetchData('/api/recent_sessions');
+            const sessionList = document.getElementById('sessionList');
+
+            if (!data || data.length === 0) {
+                sessionList.innerHTML = '<div class="chart-loading">Start the tracker to see your activity timeline!</div>';
+                return;
+            }
+
+            // Remove loading state if it exists
+            const loadingDiv = sessionList.querySelector('.chart-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            sessionList.innerHTML = data.slice(0, 12).map(session => {
+                const className = session.is_procrastination ? 'activity-item procrastination' : 'activity-item';
+                const type = session.is_study ? 'Study' : session.is_procrastination ? 'Break' : 'Other';
+                const typeClass = session.is_procrastination ? 'procrastination' : 'study';
+                const time = new Date(session.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                let details = '';
+                if (session.website_domain) {
+                    details = session.website_domain;
+                } else if (session.file_path) {
+                    details = session.file_path.split('/').pop();
+                } else if (session.window_title) {
+                    details = session.window_title.length > 40 ? session.window_title.substring(0, 40) + '...' : session.window_title;
+                }
+
+                return `
+                    <div class="${className}">
+                        <div class="activity-time">${time}</div>
+                        <div class="activity-app">${session.app_name}</div>
+                        ${details ? `<div class="activity-details">${details}</div>` : ''}
+                        <span class="activity-type ${typeClass}">${type}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function updateCharts() {
+            await Promise.all([
+                updateAppsChart(),
+                updateWebsitesChart(),
+                updateWebsiteTimeChart(),
+                updateProjectsChart()
+            ]);
         }
 
         async function refreshAll() {
