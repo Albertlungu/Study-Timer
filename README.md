@@ -59,7 +59,8 @@ pip install -r requirements.txt
 python src/init_db.py
 ```
 
-### Quick Start (NEW!)
+## Quick Start
+
 ```bash
 # One command to start everything!
 ./run.sh
