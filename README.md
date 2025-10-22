@@ -58,7 +58,17 @@ pip install -r requirements.txt
 python src/init_db.py
 ```
 
-## Usage
+### Quick Start (NEW!)
+```bash
+# One command to start everything!
+./run.sh
+
+# This will:
+# 1. Kill any existing processes
+# 2. Start the tracker in background
+# 3. Start the dashboard at http://localhost:5000
+# 4. Show you logs for debugging
+```
 
 ### Start the Tracker
 ```bash
@@ -85,6 +95,7 @@ Then open your browser to `http://localhost:5000`
 ```
 Study-Timer/
 ├── README.md                 # You are here!
+├── run.sh                    # 🚀 One-command startup (NEW!)
 ├── requirements.txt          # Python dependencies
 ├── src/
 │   ├── main.py              # Main tracking daemon

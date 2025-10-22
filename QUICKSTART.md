@@ -16,6 +16,19 @@ python src/init_db.py
 
 ## 🎯 Running the Application
 
+### 🔥 One-Command Start (NEW!)
+```bash
+# Start everything in one terminal!
+cd ~/Documents/GitHub/Study-Timer
+./run.sh
+
+# This automatically:
+# 1. Kills existing processes
+# 2. Starts tracker in background
+# 3. Starts dashboard at http://localhost:5000
+# 4. Shows debug logs
+```
+
 ### Terminal 1: Start the Tracker
 ```bash
 cd ~/Documents/GitHub/Study-Timer

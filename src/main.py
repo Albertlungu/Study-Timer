@@ -281,17 +281,20 @@ class StudyTimer:
                         self.logger.info("15+ minute break detected, starting new session")
                         self.end_current_session(self.last_activity_time)
                         self.start_new_session(activity_data, is_study, is_procrastination)
-                    elif (is_study != self.current_session_is_study or 
+                    elif (is_study != self.current_session_is_study or
                           is_procrastination != self.current_session_is_procrastination):
                         # Activity type changed (study -> procrastination or vice versa), start new session
                         self.logger.info(f"Activity type changed (study={is_study}, procrastination={is_procrastination}), starting new session")
                         self.end_current_session(self.last_activity_time)
                         self.start_new_session(activity_data, is_study, is_procrastination)
                     else:
-                        # Continue current session (just update duration)
+                        # Continue current session (just update duration AND app info)
                         # This allows the session to continue across app switches
                         self.logger.debug(f"[SESSION] Continuing session {self.current_session} with app switch: {app_name}")
                         self.update_session(activity_data)
+                        # Also update the session type flags in case they changed
+                        self.current_session_is_study = is_study
+                        self.current_session_is_procrastination = is_procrastination
                 else:
                     # Not a tracked activity - if we have a session, keep it but don't update
                     self.logger.debug(f"[ACTIVITY] Not tracked: {app_name}")
