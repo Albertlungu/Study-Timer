@@ -59,111 +59,79 @@ pip install -r requirements.txt
 python src/init_db.py
 ```
 
-## Quick Start
+## Testing
+
+After setup, test the dashboard functionality:
 
 ```bash
-# One command to start everything!
-./run.sh
+# Run comprehensive tests
+python3 test_dashboard.py
 
 # This will:
-# 1. Kill any existing processes
-# 2. Start the tracker in background
-# 3. Start the dashboard at http://localhost:5000
-# 4. Show you logs for debugging
+# 1. Check database connectivity
+# 2. Test all API endpoints
+# 3. Add sample data if needed
+# 4. Verify chart data availability
 ```
 
-### Start the Tracker
+## Usage
+
+### Start Everything (Recommended)
 ```bash
-# Run the tracker daemon
-python src/main.py
+./run.sh
 ```
 
-### View Your Dashboard
+### Manual Start
 ```bash
-# Start the web dashboard (in a new terminal)
-python src/dashboard/app.py
+# Terminal 1 - Start the tracker
+python3 src/main.py
+
+# Terminal 2 - Start the dashboard
+python3 src/dashboard/app.py
+
+# Visit http://localhost:5000
 ```
-
-Then open your browser to `http://localhost:5000`
-
-### Run as Background Service (Optional)
-```bash
-# Make the tracker start automatically on login
-./scripts/install_daemon.sh
-```
-
-## Project Structure
-
-```
-StudyTime/
-├── README.md                 # You are here!
-├── run.sh                    # 🚀 One-command startup (NEW!)
-├── requirements.txt          # Python dependencies
-├── src/
-│   ├── main.py              # Main tracking daemon
-│   ├── init_db.py           # Database initialization
-│   ├── config.py            # Configuration settings
-│   ├── trackers/
-│   │   ├── __init__.py
-│   │   ├── app_tracker.py   # Application tracking logic
-│   │   ├── browser_tracker.py # Browser-specific tracking
-│   │   └── file_tracker.py  # Document/file tracking
-│   └── dashboard/
-│       ├── app.py           # Flask web dashboard
-│       ├── templates/       # HTML templates
-│       └── static/          # CSS, JS, images
-├── data/
-│   └── study_data.db        # SQLite database (created on init)
-└── logs/
-    └── tracker.log          # Application logs
-```
-
-## Configuration
-
-Edit `src/config.py` to customize:
-- Tracking interval (default: 5 seconds)
-- Apps to track
-- Websites to monitor
-- Idle timeout duration
-
-## FAQ
-
-**Q: Will this slow down my Mac?**  
-A: Nope! It uses minimal resources and runs with low priority.
-
-**Q: Can I track websites in Chrome/Safari/Firefox?**  
-A: Yes! It detects active tabs in all major browsers.
-
-**Q: Does this track me 24/7?**  
-A: It only tracks when you're actively using study-related apps. Idle time is detected automatically.
-
-**Q: Where is my data stored?**  
-A: Everything is stored locally in `data/study_data.db`. Nothing is sent to the cloud.
-
-## Dashboard Design
-
-StudyTime features a modern, Hackatime-inspired design:
-
-- **🎨 Dark Theme**: Professional dark theme (#121217) with light text
-- **📱 Sidebar Navigation**: Fixed sidebar with minimalist icons and labels
-- **💎 Card-Based UI**: Clean cards with subtle shadows and hover effects
-- **🔥 Accent Colors**: Primary red (#ED3750) with professional gray palette
-- **⚡ Monospace Typography**: Techy, code-editor look with SF Mono font
-- **📊 Interactive Charts**: Pie charts and bar graphs with smooth animations
-- **📱 Responsive Layout**: Works perfectly on desktop, tablet, and mobile devices
-- **⚡ Real-Time Updates**: Live data refresh every 60 seconds
 
 ### Dashboard Features
 
-- **Sidebar Navigation**: Dashboard, Activity, Projects, Settings
-- **User Profile Header**: Avatar, username, and daily/weekly summaries
-- **Stats Cards**: Study time, sessions, streak, and procrastination metrics
-- **Charts Grid**: 4 interactive visualizations
-  - Study Apps Breakdown (Pie Chart)
-  - Study Websites Breakdown (Pie Chart)
-  - Website Time Distribution (Bar Chart)
-  - Project Time Tracking (Bar Chart)
-- **Activity Timeline**: Recent sessions with hover effects
+- **🎨 Modern UI**: Clean, Hackatime-inspired design with dark theme
+- **📊 Interactive Charts**: 4 data visualizations with real-time updates
+- **📱 Responsive**: Works on desktop, tablet, and mobile
+- **⚡ Real-time**: Auto-refreshes every 60 seconds
+- **🔒 Privacy-first**: All data stored locally
+
+#### Charts Available
+- **Study Apps Breakdown**: Pie chart of application usage
+- **Study Websites Breakdown**: Pie chart of website activity
+- **Website Time Distribution**: Bar chart of time spent per site
+- **Project Time Tracking**: Bar chart of project-based time analysis
+
+#### Smart Project Detection
+Automatically detects projects from URLs:
+- **GitHub**: `username/repository` format
+- **Google Workspace**: Docs, Sheets, Slides
+- **Notion**: Workspace detection
+- **Replit**: Project names
+- **CodePen**: User/project format
+- **VS Code Web**: Online editor detection
+
+## Troubleshooting
+
+**Dashboard not loading?**
+```bash
+# Test all components
+python3 test_dashboard.py
+```
+
+**No data showing?**
+- Ensure the tracker is running (`python3 src/main.py`)
+- Check that accessibility permissions are granted
+- Verify database exists in `data/study_data.db`
+
+**Charts not rendering?**
+- Clear browser cache and refresh
+- Check browser console for JavaScript errors
+- Ensure Chart.js library is loading correctly
 
 ## Contributing
 
