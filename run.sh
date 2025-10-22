@@ -2,8 +2,8 @@
 # Study Timer Runtime Script
 # Starts both the tracker and dashboard in a single command
 
-echo "🚀 STUDY TIMER RUNTIME"
-echo "======================"
+echo "🚀 STUDYTIME RUNTIME"
+echo "===================="
 echo ""
 
 # Check if we're in the right directory
@@ -54,13 +54,13 @@ chmod +x kill_dashboard.sh 2>/dev/null
 sleep 2
 
 echo ""
-echo "🎯 Starting Study Timer components..."
+echo "🎯 Starting StudyTime components..."
 echo ""
 
 # Function to handle cleanup on exit
 cleanup() {
     echo ""
-    echo "🛑 Shutting down Study Timer..."
+    echo "🛑 Shutting down StudyTime..."
     echo "   Press Ctrl+C again to force quit"
 
     # Kill any child processes
@@ -78,7 +78,7 @@ cleanup() {
     echo "   Cleaning up port 5000..."
     ./kill_dashboard.sh > /dev/null 2>&1
 
-    echo "✅ Study Timer stopped"
+    echo "✅ StudyTime stopped"
     exit 0
 }
 
@@ -104,8 +104,8 @@ echo "   Dashboard PID: $DASHBOARD_PID"
 sleep 2
 
 echo ""
-echo "🎉 Study Timer is now running!"
-echo "=============================="
+echo "🎉 StudyTime is now running!"
+echo "============================"
 echo ""
 echo "🌐 Dashboard: http://localhost:5000"
 echo "📝 Tracker logs: Check terminal output above"
