@@ -15,9 +15,9 @@ Inspired by Wakatime and Hackatime, but designed specifically for students who n
 ## Features
 
 ✨ **Automatic Tracking**: Runs silently in the background  
-📊 **Beautiful Dashboard**: View your stats in a web interface  
+📊 **Modern Dashboard**: Clean, Hack Club-inspired design with real-time stats  
 📝 **Document-Level Tracking**: See which specific files you worked on  
-🎨 **IB-Themed Humor**: Because if you don't laugh, you'll cry  
+🎨 **Professional UI**: Modern card-based layout with responsive design  
 🔒 **Privacy First**: All data stored locally on your machine  
 ⚡ **Lightweight**: Minimal CPU and memory usage  
 
@@ -141,11 +141,19 @@ A: Everything is stored locally in `data/study_data.db`. Nothing is sent to the 
 **Q: Will this help me pass my IB exams?**  
 A: It'll help you realize how much time you *don't* spend studying. The rest is up to you. 😅
 
-## IB Student Special Features
+## Dashboard Design
 
-- **Theory of Knowledge Mode**: Tracks time spent contemplating the nature of procrastination
-- **CAS Hour Calculator**: See if your "Extended Essay research" counts as Creativity, Activity, or Service (spoiler: it's none)
-- **Predicted Grade Motivator**: Dashboard shows increasingly desperate messages as deadlines approach
+The dashboard features a modern, clean design inspired by Hack Club's design system:
+
+- **🎨 Hack Club Colors**: Primary red (#ff2c55) with professional gray color palette
+- **📱 Responsive Layout**: Works perfectly on desktop, tablet, and mobile devices
+- **💎 Card-Based UI**: Clean white cards with subtle shadows and hover effects
+- **⚡ Real-Time Updates**: Live data refresh every 60 seconds
+- **🎯 Visual Hierarchy**: Clear sections for apps, websites, files, and activity timeline
+
+### Screenshots
+
+*Coming soon - the dashboard now features a professional, modern interface that's both beautiful and functional!*
 
 ## Contributing
 
