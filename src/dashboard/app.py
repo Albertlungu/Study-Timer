@@ -451,7 +451,7 @@ def find_free_port(start_port=5000):
 def main():
     """Run the dashboard"""
     print("=" * 60)
-    print("📊 STUDY TIMER DASHBOARD")
+    print("📊 STUDYTIME DASHBOARD")
     print("=" * 60)
     
     # Check if port is available, if not find a free one

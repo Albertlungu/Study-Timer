@@ -327,7 +327,7 @@ class StudyTimer:
 def main():
     """Entry point"""
     print("=" * 60)
-    print("📚 STUDY TIMER - Procrastination Detector 3000")
+    print("📚 STUDYTIME - Academic Time Tracker")
     print("=" * 60)
     print("\n🎯 Mission: Track your study time automatically")
     print("⚠️  Reality: Reveal how much you actually procrastinate\n")

@@ -1,4 +1,4 @@
-# Study Timer - Quick Reference
+# StudyTime - Quick Reference
 
 ## 🚀 Quick Start
 

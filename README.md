@@ -1,10 +1,10 @@
-# 📚 Study Timer - Your Personal Procrastination Detector
+# 📚 StudyTime - Your Personal Academic Time Tracker
 
-*Because CAS hours don't track themselves, but this app tracks your actual study time.*
+*Because CAS hours don't track themselves, but StudyTime tracks your actual study time.*
 
 ## What is this?
 
-Study Timer is a macOS background application that automatically tracks your study sessions by monitoring:
+StudyTime is a macOS background application that automatically tracks your study sessions by monitoring:
 - **Applications**: Obsidian, Apple Notes, Google Docs, Google Slides, VS Code, etc.
 - **Specific Files**: Tracks which documents you're working on
 - **Websites**: Monitors study-related websites in your browser
@@ -17,7 +17,7 @@ Inspired by Wakatime and Hackatime, but designed specifically for students who n
 ✨ **Automatic Tracking**: Runs silently in the background  
 📊 **Modern Dashboard**: Clean, Hack Club-inspired design with real-time stats  
 📝 **Document-Level Tracking**: See which specific files you worked on  
-🎨 **Professional UI**: Modern card-based layout with responsive design  
+🎨 **Dark Mode UI**: Professional dark theme with responsive design  
 🔒 **Privacy First**: All data stored locally on your machine  
 ⚡ **Lightweight**: Minimal CPU and memory usage  
 
@@ -51,7 +51,7 @@ pip install -r requirements.txt
 4. **Grant Accessibility Permissions**
    - Go to System Preferences → Security & Privacy → Privacy → Accessibility
    - Add Terminal or your Python executable to the list
-   - This allows the app to read window titles and track your activity
+   - This allows the StudyTime app to read window titles and track your activity
 
 5. **Initialize the database**
 ```bash
@@ -93,7 +93,7 @@ Then open your browser to `http://localhost:5000`
 ## Project Structure
 
 ```
-Study-Timer/
+StudyTime/
 ├── README.md                 # You are here!
 ├── run.sh                    # 🚀 One-command startup (NEW!)
 ├── requirements.txt          # Python dependencies
@@ -143,17 +143,18 @@ A: It'll help you realize how much time you *don't* spend studying. The rest is 
 
 ## Dashboard Design
 
-The dashboard features a modern, clean design inspired by Hack Club's design system:
+StudyTime features a modern, clean dark mode design inspired by Hack Club's design system:
 
-- **🎨 Hack Club Colors**: Primary red (#ff2c55) with professional gray color palette
+- **🌙 Dark Mode**: Professional dark theme (#0f1419) with light text
+- **🎨 Hack Club Colors**: Primary red (#ff2c55) with professional gray palette
 - **📱 Responsive Layout**: Works perfectly on desktop, tablet, and mobile devices
-- **💎 Card-Based UI**: Clean white cards with subtle shadows and hover effects
+- **💎 Card-Based UI**: Clean dark cards with subtle shadows and hover effects
 - **⚡ Real-Time Updates**: Live data refresh every 60 seconds
-- **🎯 Visual Hierarchy**: Clear sections for apps, websites, files, and activity timeline
+- **🎯 Visual Hierarchy**: Red section headers matching the main StudyTime branding
 
 ### Screenshots
 
-*Coming soon - the dashboard now features a professional, modern interface that's both beautiful and functional!*
+*Coming soon - StudyTime now features a professional, modern dark interface that's both beautiful and functional!*
 
 ## Contributing
 
