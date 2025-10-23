@@ -65,21 +65,82 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/api/reset', methods=['POST'])
-def api_reset():
-    """Reset all tracking data"""
+@app.route('/api/tab-activity', methods=['POST'])
+def api_tab_activity():
+    """Receive tab activity status from frontend"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'message': 'No data provided'}), 400
+
+        is_active = data.get('is_active', True)
+        timestamp = data.get('timestamp')
+
+        if timestamp:
+            # Convert timestamp string to datetime object
+            from datetime import datetime
+            try:
+                timestamp = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+            except ValueError:
+                timestamp = datetime.now()
+
+        # Store tab activity status in database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS tab_activity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                is_active BOOLEAN NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+        cursor.execute("""
+            INSERT INTO tab_activity (timestamp, is_active)
+            VALUES (?, ?)
+        """, (timestamp, is_active))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({'success': True, 'message': 'Tab activity recorded'})
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/tab-activity')
+def api_get_tab_activity():
+    """Get current tab activity status"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        
-        cursor.execute("DELETE FROM sessions")
-        cursor.execute("DELETE FROM activity_log")
-        cursor.execute("DELETE FROM daily_stats")
-        
-        conn.commit()
+
+        # Get the most recent tab activity status
+        cursor.execute("""
+            SELECT is_active, timestamp
+            FROM tab_activity
+            ORDER BY timestamp DESC
+            LIMIT 1
+        """)
+
+        result = cursor.fetchone()
         conn.close()
-        
-        return jsonify({'success': True, 'message': 'All data has been reset!'})
+
+        if result:
+            return jsonify({
+                'is_active': result['is_active'],
+                'timestamp': result['timestamp']
+            })
+        else:
+            # Default to active if no data
+            return jsonify({
+                'is_active': True,
+                'timestamp': None
+            })
+
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
@@ -491,6 +552,7 @@ def main():
     print("   • Project name tracking")
     print("   • Hours:Minutes time format")
     print("   • Improved pie chart colors")
+    print("   • Tab activity tracking (tracks only when dashboard is active)")
     
     port = find_free_port(DASHBOARD_PORT)
     

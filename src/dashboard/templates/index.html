@@ -393,8 +393,22 @@
             border-radius: 4px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280;
+        .tab-activity-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .tab-activity-indicator.paused {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
         }
     </style>
 </head>
@@ -428,7 +442,7 @@
                     <div class="user-avatar">ST</div>
                     <div class="user-info">
                         <h2>Student Dashboard</h2>
-                        <div class="user-stats">Today: 0m • This week: 0m</div>
+                        <div class="user-stats">Today: 0m • This week: 0m • <span id="tabActivityIndicator" class="tab-activity-indicator">🟢 Active</span></div>
                     </div>
                 </div>
                 <button class="reset-btn" onclick="resetAllData()">Reset Data</button>
@@ -499,6 +513,9 @@
         </main>
     </div>
 
+    <!-- Memory Overlay -->
+    <div class="memory-overlay" id="memoryOverlay"></div>
+
     <script>
         // ✅ VIBRANT COLOR PALETTE with HIGH CONTRAST
         const VIBRANT_COLORS = [
@@ -518,6 +535,261 @@
             '#FF69B4',  // Hot pink 2
             '#00FA9A'   // Medium spring green
         ];
+
+        // Navigation and page switching
+        let currentPage = 'dashboard';
+
+        function switchPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Remove active class from all nav links
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Show selected page
+            const targetPage = document.getElementById(`${pageName}-page`);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                currentPage = pageName;
+            }
+
+            // Add active class to nav link
+            const targetLink = document.querySelector(`[data-page="${pageName}"]`);
+            if (targetLink) {
+                targetLink.classList.add('active');
+            }
+
+            // Load page-specific data
+            if (pageName === 'timeline') {
+                loadTimelineData();
+            }
+        }
+
+        // Timeline functionality
+        async function loadTimelineData() {
+            const data = await fetchData('/api/timeline');
+            if (!data) return;
+
+            createTimelineChart(data.daily_data, data.weekly_summary);
+            renderDailyBreakdown(data.daily_data);
+            updateWeeklyMemory(data.weekly_summary);
+        }
+
+        function createTimelineChart(dailyData, weeklySummary) {
+            const ctx = document.getElementById('timelineChart');
+            if (!ctx) return;
+
+            const container = ctx.parentElement;
+            const loadingDiv = container.querySelector('.chart-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            if (window.timelineChart) {
+                window.timelineChart.destroy();
+            }
+
+            const labels = dailyData.map(day => day.day_short);
+            const studyData = dailyData.map(day => day.study_time / 3600); // Convert to hours for better visualization
+            const procrastinationData = dailyData.map(day => day.procrastination_time / 3600);
+
+            const today = new Date().toISOString().split('T')[0];
+            const todayIndex = dailyData.findIndex(day => day.date === today);
+
+            window.timelineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Study Time (hours)',
+                            data: studyData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: studyData.map((value, index) =>
+                                index === todayIndex ? '#10b981' : '#34d399'
+                            ),
+                            pointBorderColor: '#10b981',
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        },
+                        {
+                            label: 'Procrastination (hours)',
+                            data: procrastinationData,
+                            borderColor: '#ED3750',
+                            backgroundColor: 'rgba(237, 55, 80, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#ED3750',
+                            pointBorderColor: '#ED3750',
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: 'SF Mono, Monaco, Inconsolata, Roboto Mono, monospace'
+                                },
+                                callback: function(value) {
+                                    const hours = Math.floor(value);
+                                    const minutes = Math.round((value % 1) * 60);
+                                    if (hours > 0 && minutes > 0) {
+                                        return `${hours}h ${minutes}m`;
+                                    } else if (hours > 0) {
+                                        return `${hours}h`;
+                                    } else if (minutes > 0) {
+                                        return `${minutes}m`;
+                                    }
+                                    return '0m';
+                                }
+                            },
+                            grid: {
+                                color: '#2a2a2f'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: 'SF Mono, Monaco, Inconsolata, Roboto Mono, monospace'
+                                }
+                            },
+                            grid: {
+                                color: '#2a2a2f'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#9ca3af',
+                                font: {
+                                    family: 'SF Mono, Monaco, Inconsolata, Roboto Mono, monospace'
+                                },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1a1a1f',
+                            titleColor: '#e6e9ea',
+                            bodyColor: '#e6e9ea',
+                            borderColor: '#2a2a2f',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const hours = Math.floor(context.parsed.y);
+                                    const minutes = Math.round((context.parsed.y % 1) * 60);
+                                    let timeStr = '';
+                                    if (hours > 0 && minutes > 0) {
+                                        timeStr = `${hours}h ${minutes}m`;
+                                    } else if (hours > 0) {
+                                        timeStr = `${hours}h`;
+                                    } else if (minutes > 0) {
+                                        timeStr = `${minutes}m`;
+                                    } else {
+                                        timeStr = '0m';
+                                    }
+                                    return `${context.dataset.label}: ${timeStr}`;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        function renderDailyBreakdown(dailyData) {
+            const container = document.getElementById('dailyBreakdown');
+            const today = new Date().toISOString().split('T')[0];
+
+            container.innerHTML = dailyData.map(day => {
+                const isToday = day.date === today;
+                const zeroTime = day.study_time === 0;
+
+                return `
+                    <div class="day-card ${isToday ? 'today' : ''}" onclick="showWeeklyMemory()">
+                        <div class="day-name">${day.day_short}</div>
+                        <div class="day-study-time ${zeroTime ? 'zero' : ''}">${day.study_time_formatted}</div>
+                        <div class="day-sessions">${day.total_sessions} sessions</div>
+                        ${day.most_used_app ? `<div class="day-app">Top app: ${day.most_used_app}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateWeeklyMemory(weeklySummary) {
+            const memoryContent = document.getElementById('memoryContent');
+            memoryContent.innerHTML = `
+                <div class="memory-stat">
+                    <span class="memory-label">Total Study Time</span>
+                    <span class="memory-value study">${weeklySummary.total_study_time_formatted}</span>
+                </div>
+                <div class="memory-stat">
+                    <span class="memory-label">Procrastination Time</span>
+                    <span class="memory-value procrastination">${weeklySummary.total_procrastination_time_formatted}</span>
+                </div>
+                <div class="memory-stat">
+                    <span class="memory-label">Total Sessions</span>
+                    <span class="memory-value">${weeklySummary.total_sessions}</span>
+                </div>
+                <div class="memory-stat">
+                    <span class="memory-label">Daily Average</span>
+                    <span class="memory-value study">${weeklySummary.average_daily}</span>
+                </div>
+                ${weeklySummary.best_day ? `
+                    <div class="memory-stat">
+                        <span class="memory-label">Best Day</span>
+                        <span class="memory-value study">${weeklySummary.best_day} (${weeklySummary.best_day_time})</span>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        function showWeeklyMemory() {
+            const overlay = document.getElementById('memoryOverlay');
+            const memory = document.getElementById('weeklyMemory');
+
+            overlay.classList.add('show');
+            memory.classList.add('show');
+
+            // Load fresh data for the memory
+            loadTimelineData();
+        }
+
+        function closeWeeklyMemory() {
+            const overlay = document.getElementById('memoryOverlay');
+            const memory = document.getElementById('weeklyMemory');
+
+            overlay.classList.remove('show');
+            memory.classList.remove('show');
+        }
+
+        function refreshTimeline() {
+            if (currentPage === 'timeline') {
+                loadTimelineData();
+            }
+        }
+
+        // Close memory when clicking overlay
+        document.getElementById('memoryOverlay').addEventListener('click', closeWeeklyMemory);
 
         async function fetchData(endpoint) {
             try {
@@ -858,11 +1130,95 @@
             ]);
         }
 
-        // Initial load
-        refreshAll();
+        // Tab Activity Tracking Variables and Functions
+        let isTabActive = true;
+        let tabActivityInterval = null;
+        const TAB_ACTIVITY_CHECK_INTERVAL = 30000; // Check every 30 seconds
+
+        function initTabActivityTracking() {
+            // Set up event listeners for tab activity
+            window.addEventListener('focus', handleTabFocus);
+            window.addEventListener('blur', handleTabBlur);
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+
+            // Check tab activity every 30 seconds
+            tabActivityInterval = setInterval(checkAndSendTabActivity, TAB_ACTIVITY_CHECK_INTERVAL);
+
+            // Send initial tab activity status
+            sendTabActivityStatus(true);
+
+            console.log('📊 Tab activity tracking initialized');
+        }
+
+        function handleTabFocus() {
+            isTabActive = true;
+            sendTabActivityStatus(true);
+            updateTabActivityIndicator(true);
+            console.log('👀 Tab focused - tracking active');
+        }
+
+        function handleTabBlur() {
+            isTabActive = false;
+            sendTabActivityStatus(false);
+            updateTabActivityIndicator(false);
+            console.log('😴 Tab blurred - tracking paused');
+        }
+
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                isTabActive = false;
+                sendTabActivityStatus(false);
+                updateTabActivityIndicator(false);
+                console.log('🙈 Tab hidden - tracking paused');
+            } else {
+                isTabActive = true;
+                sendTabActivityStatus(true);
+                updateTabActivityIndicator(true);
+                console.log('👁️ Tab visible - tracking active');
+            }
+        }
+
+        async function sendTabActivityStatus(active) {
+            try {
+                await fetch('/api/tab-activity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        is_active: active,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+            } catch (error) {
+                console.error('Error sending tab activity status:', error);
+            }
+        }
+
+        function checkAndSendTabActivity() {
+            // This runs every 30 seconds to ensure backend has current status
+            sendTabActivityStatus(isTabActive);
+        }
+
+        function updateTabActivityIndicator(active) {
+            const indicator = document.getElementById('tabActivityIndicator');
+            if (indicator) {
+                if (active) {
+                    indicator.textContent = '🟢 Active';
+                    indicator.className = 'tab-activity-indicator';
+                } else {
+                    indicator.textContent = '🔴 Paused';
+                    indicator.className = 'tab-activity-indicator paused';
+                }
+            }
+        }
 
         // Refresh data every 60 seconds
         setInterval(refreshAll, 60000);
+
+        // Initialize tab activity tracking when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initTabActivityTracking();
+        });
     </script>
-</body>
 </html>

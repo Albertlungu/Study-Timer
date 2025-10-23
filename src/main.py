@@ -311,25 +311,63 @@ class StudyTimer:
             self.conn.commit()
         except Exception as e:
             self.logger.error(f"Error updating stats: {e}")
-    
+
+    def is_tab_active(self):
+        """Check if the dashboard tab is currently active"""
+        try:
+            # Check the most recent tab activity status from the database
+            self.cursor.execute("""
+                SELECT is_active, timestamp
+                FROM tab_activity
+                ORDER BY timestamp DESC
+                LIMIT 1
+            """)
+
+            result = self.cursor.fetchone()
+            if result and result['is_active']:
+                return True
+            elif result is None:
+                # If no tab activity data yet, assume active (for backwards compatibility)
+                return True
+            else:
+                return False
+        except Exception as e:
+            self.logger.debug(f"Error checking tab activity: {e}")
+            # If we can't check, assume active to avoid breaking tracking
+            return True
+
     def run(self):
         """Main loop"""
         self.logger.info("🚀 Starting study tracking with PROJECT NAME extraction...")
         self.logger.info("Session break threshold: 15 minutes")
         self.logger.info("✅ Kognity will be tracked!")
         self.logger.info("✅ Project names will be extracted automatically!")
-        if self.use_mock:
-            self.logger.info("✅ Mock sleep detection enabled (for testing)")
-        else:
-            self.logger.info("✅ Real sleep/lock detection enabled")
+        self.logger.info("✅ Real sleep/lock detection enabled")
+        self.logger.info("✅ Tab activity tracking enabled")
         update_counter = 0
-        
+
         try:
             while True:
                 # Check if system is asleep or locked
                 if self.is_system_asleep():
                     self.wait_for_system_wake()
                     continue
+
+                # Check if dashboard tab is active
+                if not self.is_tab_active():
+                    self.logger.debug("📱 Dashboard tab is inactive, pausing tracking...")
+                    # If we have an active session, pause it until tab becomes active
+                    if self.current_session:
+                        self.logger.info("📱 Tab became inactive, pausing current session")
+                        # Note: We don't end the session, just pause tracking until tab is active again
+                    time.sleep(TRACKING_INTERVAL)
+                    continue
+
+                # If tab just became active and we had a paused session, resume it
+                if self.current_session:
+                    self.logger.debug("📱 Dashboard tab is active, resuming tracking")
+                else:
+                    self.logger.debug("📱 Dashboard tab is active, ready to track new sessions")
 
                 activity = self.app_tracker.get_current_activity()
                 app_name = activity['app_name']
@@ -437,6 +475,7 @@ def main():
     print("   • GitHub repo tracking")
     print("   • Google Docs/Slides/Sheets document names")
     print("   • Sleep/lock detection (no tracking when away)")
+    print("   • Tab activity tracking (only tracks when dashboard is active)")
     print("   • And more!")
     print("\nGrant Accessibility permissions in System Preferences!")
     print("   (Security & Privacy → Privacy → Accessibility)\n")

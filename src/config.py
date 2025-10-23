@@ -95,6 +95,11 @@ PROCRASTINATION_WEBSITES = [
 # Procrastination apps
 PROCRASTINATION_APPS = [
     "Code",  # VS Code - moved from study apps
+    "iTerm",
+    "iTerm2",
+    "Terminal",
+    "Discord",
+    "Slack",
 ]
 
 # Dashboard settings

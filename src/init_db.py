@@ -95,6 +95,22 @@ def init_database():
         ON daily_stats(date)
     """)
     
+    # Create tab_activity table for tracking dashboard tab status
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS tab_activity (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            is_active BOOLEAN NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
+    # Create index for tab_activity table
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_tab_activity_timestamp 
+        ON tab_activity(timestamp)
+    """)
+    
     conn.commit()
     conn.close()
     
